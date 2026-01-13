@@ -1,4 +1,4 @@
-name: Deploy Trigger
+name: Trigger
 
 on:
   pull_request:
@@ -9,11 +9,11 @@ permissions:
   contents: read
 
 jobs:
-  check-title-and-trigger-deploy:
+  check-title-and-trigger:
     runs-on: ubuntu-latest
     if: github.event.pull_request.title == 'deploy-github-pages'
     steps:
-      - name: Trigger Fetch Files Workflow
+      - name: Sep Trigger 2 Workflow
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
