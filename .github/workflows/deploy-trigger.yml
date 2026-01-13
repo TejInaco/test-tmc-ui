@@ -4,8 +4,12 @@ on:
   pull_request:
     types: [opened, edited, synchronize]
 
+permissions:
+  actions: write
+  contents: read
+
 jobs:
-  check-and-trigger:
+  check-title-and-trigger-deploy:
     runs-on: ubuntu-latest
     if: github.event.pull_request.title == 'deploy-github-pages'
     steps:
