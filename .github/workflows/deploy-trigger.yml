@@ -11,7 +11,7 @@ permissions:
 jobs:
   check-title-and-trigger:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.title == 'deploy-github-pages'
+    if: startsWith(github.event.pull_request.title, 'deploy-github-pages')
     steps:
       - name: Sep Trigger 2 Workflow
         uses: actions/github-script@v7
