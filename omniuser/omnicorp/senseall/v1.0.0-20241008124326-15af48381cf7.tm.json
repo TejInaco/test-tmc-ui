@@ -1,0 +1,37 @@
+{
+  "@context": [
+    "https://www.w3.org/2022/wot/td/v1.1",
+    {
+		"schema":"https://schema.org/"
+	}
+  ],
+  "@type": "tm:ThingModel",
+  "title": "Omnicorp Omnisensor",
+  "schema:mpn": "senseall",
+  "schema:manufacturer": {
+    "schema:name": "omnicorp"
+  },
+  "schema:author": {
+    "schema:name": "omniuser"
+  },
+  "properties": {
+    "temperature": {
+      "description": "temperature (degrees C)",
+      "type": "number",
+      "readOnly": true
+    },
+    "humidity": {
+      "description": "relative humidity (%)",
+      "type": "number",
+      "readOnly": true
+    },
+    "pressure": {
+      "description": "atmospheric pressure (hPa)",
+      "type": "number",
+      "readOnly": true
+    }
+  },
+  "version": {
+    "model": "v1.0.0"
+  }
+,"id":"omniuser/omnicorp/senseall/v1.0.0-20241008124326-15af48381cf7.tm.json"}

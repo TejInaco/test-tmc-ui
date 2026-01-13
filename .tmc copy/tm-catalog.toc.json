@@ -1,0 +1,148 @@
+{
+  "meta": {
+    "created": "2025-12-30T15:30:41.005646+01:00"
+  },
+  "data": [
+    {
+      "name": "omnicorp/omnicorp/lightall",
+      "schema:manufacturer": {
+        "schema:name": "omnicorp"
+      },
+      "schema:mpn": "lightall",
+      "schema:author": {
+        "schema:name": "omnicorp"
+      },
+      "versions": [
+        {
+          "description": "",
+          "version": {
+            "model": "2.0.1"
+          },
+          "links": {
+            "content": "omnicorp/omnicorp/lightall/v2.0.1-20241008124326-8c75753996b3.tm.json"
+          },
+          "tmID": "omnicorp/omnicorp/lightall/v2.0.1-20241008124326-8c75753996b3.tm.json",
+          "digest": "8c75753996b3",
+          "timestamp": "20241008124326",
+          "externalID": ""
+        },
+        {
+          "description": "",
+          "version": {
+            "model": "2.0.0"
+          },
+          "links": {
+            "content": "omnicorp/omnicorp/lightall/v2.0.0-20241008124326-f5550ca10767.tm.json"
+          },
+          "tmID": "omnicorp/omnicorp/lightall/v2.0.0-20241008124326-f5550ca10767.tm.json",
+          "digest": "f5550ca10767",
+          "timestamp": "20241008124326",
+          "externalID": ""
+        },
+        {
+          "description": "",
+          "version": {
+            "model": "1.0.0"
+          },
+          "links": {
+            "content": "omnicorp/omnicorp/lightall/v1.0.0-20241008124326-6e351cc95192.tm.json"
+          },
+          "tmID": "omnicorp/omnicorp/lightall/v1.0.0-20241008124326-6e351cc95192.tm.json",
+          "digest": "6e351cc95192",
+          "timestamp": "20241008124326",
+          "externalID": "",
+          "attachments": [
+            {
+              "name": "lightall-v1.svg",
+              "mediaType": "image/svg+xml"
+            },
+            {
+              "name": "lightall-v1.png",
+              "mediaType": "image/png"
+            }
+          ]
+        }
+      ],
+      "attachments": [
+        {
+          "name": "lightall-v2.svg",
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "name": "lightall-v2.png",
+          "mediaType": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "omnicorp/omnicorp/lightall-mk2",
+      "schema:manufacturer": {
+        "schema:name": "omnicorp"
+      },
+      "schema:mpn": "lightall-mk2",
+      "schema:author": {
+        "schema:name": "omnicorp"
+      },
+      "versions": [
+        {
+          "description": "",
+          "version": {
+            "model": "2.0.0"
+          },
+          "links": {
+            "content": "omnicorp/omnicorp/lightall-mk2/v2.0.0-20241008124326-78224e4a2056.tm.json"
+          },
+          "tmID": "omnicorp/omnicorp/lightall-mk2/v2.0.0-20241008124326-78224e4a2056.tm.json",
+          "digest": "78224e4a2056",
+          "timestamp": "20241008124326",
+          "externalID": ""
+        }
+      ],
+      "attachments": [
+        {
+          "name": "lightall-v1.svg",
+          "mediaType": "image/svg+xml"
+        },
+        {
+          "name": "lightall-v1.png",
+          "mediaType": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "omniuser/omnicorp/senseall",
+      "schema:manufacturer": {
+        "schema:name": "omnicorp"
+      },
+      "schema:mpn": "senseall",
+      "schema:author": {
+        "schema:name": "omniuser"
+      },
+      "versions": [
+        {
+          "description": "",
+          "version": {
+            "model": "1.0.0"
+          },
+          "links": {
+            "content": "omniuser/omnicorp/senseall/v1.0.0-20241008124326-15af48381cf7.tm.json"
+          },
+          "tmID": "omniuser/omnicorp/senseall/v1.0.0-20241008124326-15af48381cf7.tm.json",
+          "digest": "15af48381cf7",
+          "timestamp": "20241008124326",
+          "externalID": ""
+        }
+      ],
+      "attachments": [
+        {
+          "name": "senseall-v1.png",
+          "mediaType": "image/png"
+        },
+        {
+          "name": "senseall-v1.svg",
+          "mediaType": "image/svg+xml"
+        }
+      ]
+    }
+  ]
+}
