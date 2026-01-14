@@ -1,3 +1,0 @@
-omnicorp/omnicorp/lightall
-omnicorp/omnicorp/lightall-mk2
-omniuser/omnicorp/senseall
