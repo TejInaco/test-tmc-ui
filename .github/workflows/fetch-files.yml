@@ -1,4 +1,4 @@
-name: Fetch Files
+name: Deploy frontend to GitHub Pages
 
 on:
   push:
@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  fetch-and-deploy:
+  deploy-tmc-us:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -37,12 +37,10 @@ jobs:
 
       - name: Set config - base path
         run: |
-          pwd
-          ls -la
-          cat vite.config.ts
-          sed -i "s|defineConfig({|defineConfig({\n  base: '/${{ github.event.repository.name }}/',|" vite.config.ts
-          echo "=== vite.config.ts after modification ==="
-          cat vite.config.ts
+          cat vite.config.mjs
+          sed -i "s|defineConfig({|defineConfig({\n  base: '/${{ github.event.repository.name }}/',|" vite.config.mjs
+          echo "=== vite.config.mjs after modification ==="
+          cat vite.config.mjs
 
       - name: Install dependencies
         run: yarn install
