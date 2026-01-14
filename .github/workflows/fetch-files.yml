@@ -1,7 +1,9 @@
 name: Fetch Files and Deploy to GitHub Pages
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -32,6 +34,13 @@ jobs:
           node-version: '22'
           cache: 'yarn'
           cache-dependency-path: tmc-ui/yarn.lock
+
+      - name: Set base path in vite.config.ts
+        working-directory: tmc-ui
+        run: |
+          sed -i "s|defineConfig({|defineConfig({\n  base: '/${{ github.event.repository.name }}/',|" vite.config.ts
+          echo "=== vite.config.ts after modification ==="
+          cat vite.config.ts
 
       - name: Install dependencies
         working-directory: tmc-ui
