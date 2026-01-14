@@ -37,6 +37,8 @@ jobs:
 
       - name: Set config - base path
         run: |
+          pwd
+          ls -la
           cat vite.config.ts
           sed -i "s|defineConfig({|defineConfig({\n  base: '/${{ github.event.repository.name }}/',|" vite.config.ts
           echo "=== vite.config.ts after modification ==="
