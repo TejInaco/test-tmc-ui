@@ -1,4 +1,4 @@
-name: Fetch Files and Deploy to GitHub Pages
+name: Fetch Files
 
 on:
   push:
@@ -21,33 +21,31 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Fetch files from wot-oss/tmc-ui
+      - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          repository: wot-oss/tmc-ui
-          ref: main
-          path: tmc-ui
+        # with:
+        #  repository: wot-oss/tmc-ui
+        #  ref: main
+        #  path: tmc-ui
 
-      - name: Setup Node.js
+      - name: Set tool - yarn
         uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'yarn'
-          cache-dependency-path: tmc-ui/yarn.lock
+          cache-dependency-path: yarn.lock
 
-      - name: Set base path in vite.config.ts
-        working-directory: tmc-ui
+      - name: Set config - base path
         run: |
+          cat vite.config.ts
           sed -i "s|defineConfig({|defineConfig({\n  base: '/${{ github.event.repository.name }}/',|" vite.config.ts
           echo "=== vite.config.ts after modification ==="
           cat vite.config.ts
 
       - name: Install dependencies
-        working-directory: tmc-ui
         run: yarn install
 
       - name: Build
-        working-directory: tmc-ui
         run: yarn build
 
       - name: Setup Pages
