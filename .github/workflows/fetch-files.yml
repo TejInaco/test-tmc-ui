@@ -65,9 +65,7 @@ jobs:
       - name: Set config - __BASE_URL__ to REPO_URL
         run: |
           echo "Setting __BASE_URL__ to: $REPO_URL"
-          # Replaces: __BASE_URL__: JSON.stringify(""),
-          # With:     __BASE_URL__: JSON.stringify("wot-oss/example-catalog"),
-          sed -i "s|__BASE_URL__:[[:space:]]*JSON.stringify(.*)|__BASE_URL__: JSON.stringify(\"$REPO_URL\"),|g" vite.config.mjs
+          sed -i "s|__BASE_URL__:[[:space:]]*JSON.stringify(.*)|__BASE_URL__: JSON.stringify(\"$REPO_URL\")|g" vite.config.mjs
           echo "=== vite.config.mjs after __BASE_URL__ update ==="
           cat vite.config.mjs
 
