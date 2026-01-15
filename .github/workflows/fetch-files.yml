@@ -43,7 +43,7 @@ jobs:
           pwd
           rsync -a temp-repo/ public/ --exclude '.git'
           rm -rf temp-repo
-          la -la public/
+          ls -la public/
 
       - name: Set tool - yarn
         uses: actions/setup-node@v4
