@@ -68,7 +68,7 @@ const Layout: React.FC = () => {
         const FILE = "/.tmc/tm-catalog.toc.json";
 
         // BASE_URL already includes the repo base on GitHub Pages (e.g. "/test-tmc-ui/")
-        const url = `${__BASE_URL__}${FILE}`;
+        const url = `public/${__BASE_URL__}${FILE}`;
 
         console.log("Fetching catalog from:", url);
 
