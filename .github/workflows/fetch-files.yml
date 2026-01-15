@@ -33,7 +33,7 @@ jobs:
       - name: Fetch files from external repository
         run: |
           git clone $REPO_URL temp-repo
-          cp -r temp-repo/* public/
+          rsync -a temp-repo/ public/ --exclude '.git'
           rm -rf temp-repo
           cd public
           ls -la
