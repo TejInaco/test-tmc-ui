@@ -18,7 +18,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  REPO_URL: https://github.com/wot-oss/example-catalog
+  REPO_URL: wot-oss/example-catalog
 
 jobs:
   deploy-tmc-ui:
@@ -26,17 +26,24 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Checkout external repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.REPO_URL }}
+          path: temp-repo
+          fetch-depth: 1
+
       - name: Fetch files from external repository
         run: |
-          git clone $REPO_URL temp-repo
+          pwd
           rsync -a temp-repo/ public/ --exclude '.git'
           rm -rf temp-repo
-          cd public
-          ls -la
+          la -la public/
 
       - name: Set tool - yarn
         uses: actions/setup-node@v4
@@ -44,7 +51,7 @@ jobs:
           node-version: '22'
           cache: 'yarn'
           cache-dependency-path: yarn.lock
-      
+
       - name: Print GitHub context
         run: echo '${{ toJSON(github) }}'
 
@@ -53,6 +60,15 @@ jobs:
           cat vite.config.mjs
           sed -i "s|return {|return {\n    base: '/${{ github.event.repository.name }}/',|" vite.config.mjs
           echo "=== vite.config.mjs after modification ==="
+          cat vite.config.mjs
+
+      - name: Set config - __BASE_URL__ to REPO_URL
+        run: |
+          echo "Setting __BASE_URL__ to: $REPO_URL"
+          # Replaces: __BASE_URL__: JSON.stringify(""),
+          # With:     __BASE_URL__: JSON.stringify("wot-oss/example-catalog"),
+          sed -i "s|__BASE_URL__:[[:space:]]*JSON.stringify(.*)|__BASE_URL__: JSON.stringify(\"$REPO_URL\"),|g" vite.config.mjs
+          echo "=== vite.config.mjs after __BASE_URL__ update ==="
           cat vite.config.mjs
 
       - name: Install dependencies

@@ -10,6 +10,8 @@ declare module '*.svg' {
 
 declare const __API_BASE__: string;
 
+declare const __BASE_URL__: string;
+
 type Link = {
   self: string;
   content?: string;
