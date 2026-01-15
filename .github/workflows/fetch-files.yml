@@ -75,6 +75,12 @@ jobs:
       - name: Build
         run: yarn build
 
+      - name: Debug dist assets
+        run: |
+          ls -la dist
+          ls -la dist/assets | head -200
+          grep -R "theme.css" -n dist/assets || true
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
