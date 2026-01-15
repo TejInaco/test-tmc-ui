@@ -1,35 +1,43 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useFilters } from '../context/FilterContext';
-import { useLoaderData, useNavigation } from 'react-router-dom';
-import GridList from '../components/GridList';
-import Search from '../components/Search';
-import SideBar from '../components/SideBar';
-import Pagination from '../components/Pagination';
-import { INVENTORY_ENDPOINT, PROTOCOLS, PROTOCOLS_FILTER } from '../utils/constants';
+import React, { useState, useEffect, useMemo, useCallback } from "react";
+import { useFilters } from "../context/FilterContext";
+import { useLoaderData, useNavigation } from "react-router-dom";
+import GridList from "../components/GridList";
+import Search from "../components/Search";
+import SideBar from "../components/SideBar";
+import Pagination from "../components/Pagination";
+import {
+  INVENTORY_ENDPOINT,
+  PROTOCOLS,
+  PROTOCOLS_FILTER,
+} from "../utils/constants";
 
 const Layout: React.FC = () => {
   const loadedItems = useLoaderData() as Item[];
   const [items, setItems] = useState<Item[]>(loadedItems);
 
   const navigation = useNavigation();
-  const isLoading = navigation.state === 'loading';
+  const isLoading = navigation.state === "loading";
 
   const [error] = useState<string | null>(null);
   const [isResetClicked, setIsResetClicked] = useState(false);
 
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
 
   const { repositories, manufacturers, authors } = useFilters();
 
   const [repositoriesState, setRepositoriesState] = useState<FilterData[]>([]);
-  const [manufacturersState, setManufacturersState] = useState<FilterData[]>([]);
+  const [manufacturersState, setManufacturersState] = useState<FilterData[]>(
+    []
+  );
   const [authorsState, setAuthorsState] = useState<FilterData[]>([]);
   const [protocolsState, setProtocolsState] = useState<FilterData[]>(PROTOCOLS);
 
-  const [protocolFilteredItems, setProtocolFilteredItems] = useState<Item[] | null>(null);
+  const [protocolFilteredItems, setProtocolFilteredItems] = useState<
+    Item[] | null
+  >(null);
   const selectedProtocols = useMemo(
     () => protocolsState.filter((p) => p.checked).map((p) => p.value),
-    [protocolsState],
+    [protocolsState]
   );
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(20);
@@ -53,25 +61,63 @@ const Layout: React.FC = () => {
   }, [authors]);
 
   useEffect(() => {
+    const controller = new AbortController();
+
+    const fetchCatalog = async () => {
+      try {
+        const FILE = ".tmc/tm-catalog.toc.json";
+
+        // BASE_URL already includes the repo base on GitHub Pages (e.g. "/test-tmc-ui/")
+        const url = `${__BASE_URL__}${FILE}`;
+
+        console.log("Fetching catalog from:", url);
+
+        const res = await fetch(url, { signal: controller.signal });
+        if (!res.ok)
+          throw new Error(
+            `Catalog fetch failed: ${res.status} ${res.statusText}`
+          );
+
+        const data = await res.json();
+        console.log("Fetched catalog data:", data);
+
+        return data;
+      } catch (e: any) {
+        if (e?.name !== "AbortError") console.error(e);
+        return null;
+      }
+    };
+
+    fetchCatalog();
+
+    return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
     if (!__API_BASE__) return;
     if (selectedProtocols.length === 0) {
       setProtocolFilteredItems(null);
       return;
     }
-    const filterProtocols: string = selectedProtocols ? selectedProtocols.join(',') : '';
+    const filterProtocols: string = selectedProtocols
+      ? selectedProtocols.join(",")
+      : "";
 
     const controller = new AbortController();
     const fetchProtocols = async () => {
       try {
         const fp = encodeURIComponent(filterProtocols);
-        const res = await fetch(`${__API_BASE__}/${INVENTORY_ENDPOINT}?${PROTOCOLS_FILTER}${fp}`, {
-          signal: controller.signal,
-        });
+        const res = await fetch(
+          `${__API_BASE__}/${INVENTORY_ENDPOINT}?${PROTOCOLS_FILTER}${fp}`,
+          {
+            signal: controller.signal,
+          }
+        );
         if (!res.ok) throw new Error(`Protocol fetch failed: ${res.status}`);
         const json = await res.json();
         setProtocolFilteredItems(Array.isArray(json.data) ? json.data : []);
       } catch (e: any) {
-        if (e.name !== 'AbortError') console.error(e);
+        if (e.name !== "AbortError") console.error(e);
       }
     };
     fetchProtocols();
@@ -85,7 +131,9 @@ const Layout: React.FC = () => {
     const checkedManufacturers = manufacturersState
       .filter((opt) => opt.checked)
       .map((opt) => opt.value);
-    const checkedAuthors = authorsState.filter((opt) => opt.checked).map((opt) => opt.value);
+    const checkedAuthors = authorsState
+      .filter((opt) => opt.checked)
+      .map((opt) => opt.value);
 
     const hasFilters =
       checkedRepositories.length > 0 ||
@@ -97,19 +145,28 @@ const Layout: React.FC = () => {
     if (hasFilters) {
       result = items.filter((item) => {
         const matchesCatalog =
-          checkedRepositories.length === 0 || checkedRepositories.includes(item.repo);
+          checkedRepositories.length === 0 ||
+          checkedRepositories.includes(item.repo);
         const matchesManufacturer =
           checkedManufacturers.length === 0 ||
-          checkedManufacturers.includes(item['schema:manufacturer']?.['schema:name']);
+          checkedManufacturers.includes(
+            item["schema:manufacturer"]?.["schema:name"]
+          );
         const matchesAuthor =
           checkedAuthors.length === 0 ||
-          checkedAuthors.includes(item['schema:author']?.['schema:name']);
+          checkedAuthors.includes(item["schema:author"]?.["schema:name"]);
 
         return matchesCatalog && matchesManufacturer && matchesAuthor;
       });
     }
     return result;
-  }, [items, repositoriesState, manufacturersState, authorsState, protocolFilteredItems]);
+  }, [
+    items,
+    repositoriesState,
+    manufacturersState,
+    authorsState,
+    protocolFilteredItems,
+  ]);
 
   const totalPages = Math.max(1, Math.ceil(filteredItems.length / pageSize));
 
@@ -122,17 +179,23 @@ const Layout: React.FC = () => {
     return filteredItems.slice(start, start + pageSize);
   }, [filteredItems, page, pageSize]);
 
-  const handleFilterChange = (sectionId: string, optionValue: string, checked: boolean) => {
+  const handleFilterChange = (
+    sectionId: string,
+    optionValue: string,
+    checked: boolean
+  ) => {
     const updateOptions = (prev: FilterData[]) =>
-      prev.map((opt) => (opt.value === optionValue ? { ...opt, checked } : opt));
+      prev.map((opt) =>
+        opt.value === optionValue ? { ...opt, checked } : opt
+      );
 
-    if (sectionId === 'repository') {
+    if (sectionId === "repository") {
       setRepositoriesState(updateOptions);
-    } else if (sectionId === 'manufacturer') {
+    } else if (sectionId === "manufacturer") {
       setManufacturersState(updateOptions);
-    } else if (sectionId === 'author') {
+    } else if (sectionId === "author") {
       setAuthorsState(updateOptions);
-    } else if (sectionId === 'protocol') {
+    } else if (sectionId === "protocol") {
       setProtocolsState(updateOptions);
     }
   };
@@ -143,11 +206,17 @@ const Layout: React.FC = () => {
   }, []);
 
   const resetFilters = () => {
-    setQuery('');
-    setRepositoriesState((prev) => prev.map((opt) => ({ ...opt, checked: false })));
-    setManufacturersState((prev) => prev.map((opt) => ({ ...opt, checked: false })));
+    setQuery("");
+    setRepositoriesState((prev) =>
+      prev.map((opt) => ({ ...opt, checked: false }))
+    );
+    setManufacturersState((prev) =>
+      prev.map((opt) => ({ ...opt, checked: false }))
+    );
     setAuthorsState((prev) => prev.map((opt) => ({ ...opt, checked: false })));
-    setProtocolsState((prev) => prev.map((opt) => ({ ...opt, checked: false })));
+    setProtocolsState((prev) =>
+      prev.map((opt) => ({ ...opt, checked: false }))
+    );
     setIsResetClicked(true);
     setTimeout(() => setIsResetClicked(false), 150);
     setPage(1);
@@ -195,15 +264,16 @@ const Layout: React.FC = () => {
             <section className="w-3/4 flex-1">
               <div className="mb-4 flex flex-wrap items-center gap-4 text-inputText">
                 <p className="text-lg">
-                  {filteredItems.length} result{filteredItems.length !== 1 ? 's' : ''} found
+                  {filteredItems.length} result
+                  {filteredItems.length !== 1 ? "s" : ""} found
                 </p>
                 <button
                   type="button"
                   onClick={resetFilters}
                   className={`w-64 rounded bg-buttonPrimary px-3 py-2 text-sm text-textWhite disabled:opacity-40 ${
                     isResetClicked
-                      ? 'bg-buttonOnClick hover:bg-buttonOnClick'
-                      : 'bg-buttonPrimary hover:bg-buttonOnHover'
+                      ? "bg-buttonOnClick hover:bg-buttonOnClick"
+                      : "bg-buttonPrimary hover:bg-buttonOnHover"
                   }`}
                 >
                   Reset filters
@@ -226,12 +296,22 @@ const Layout: React.FC = () => {
                   </select>
                 </label>
                 {query && filteredItems.length === 0 && (
-                  <span className="text-sm text-textLabel">(No matches for "{query}")</span>
+                  <span className="text-sm text-textLabel">
+                    (No matches for "{query}")
+                  </span>
                 )}
               </div>
-              <GridList items={paginatedItems} loading={isLoading} error={error} />
+              <GridList
+                items={paginatedItems}
+                loading={isLoading}
+                error={error}
+              />
 
-              <Pagination page={page} totalPages={totalPages} onPageChange={(p) => setPage(p)} />
+              <Pagination
+                page={page}
+                totalPages={totalPages}
+                onPageChange={(p) => setPage(p)}
+              />
             </section>
           </div>
         </main>
