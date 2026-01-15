@@ -65,14 +65,14 @@ const Layout: React.FC = () => {
 
     const fetchCatalog = async () => {
       try {
-        const FILE = "/.tmc/tm-catalog.toc.json";
+        const FILE = ".tmc/tm-catalog.toc.json";
 
         // BASE_URL already includes the repo base on GitHub Pages (e.g. "/test-tmc-ui/")
-        const url = `public/${__BASE_URL__}${FILE}`;
+        //const url = `public/${__BASE_URL__}${FILE}`;
 
-        console.log("Fetching catalog from:", url);
+        console.log("Fetching catalog from:", FILE);
 
-        const res = await fetch(url, { signal: controller.signal });
+        const res = await fetch(FILE, { signal: controller.signal });
         if (!res.ok)
           throw new Error(
             `Catalog fetch failed: ${res.status} ${res.statusText}`
