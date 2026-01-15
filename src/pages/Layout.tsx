@@ -65,7 +65,7 @@ const Layout: React.FC = () => {
 
     const fetchCatalog = async () => {
       try {
-        const FILE = ".tmc/tm-catalog.toc.json";
+        const FILE = "/.tmc/tm-catalog.toc.json";
 
         // BASE_URL already includes the repo base on GitHub Pages (e.g. "/test-tmc-ui/")
         const url = `${__BASE_URL__}${FILE}`;
