@@ -1,20 +1,20 @@
-import React from 'react';
-import { createHashRouter, RouterProvider, Outlet } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import Layout from './pages/Layout';
-import Details from './pages/Details';
-import FourZeroFourNotFound from './components/404NotFound';
-import { FilterProvider } from './context/FilterContext';
+import React from "react";
+import { createHashRouter, RouterProvider, Outlet } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Layout from "./pages/Layout";
+import Details from "./pages/Details";
+import FourZeroFourNotFound from "./components/404NotFound";
+import { FilterProvider } from "./context/FilterContext";
 
 async function inventoryLoader() {
   if (!__API_BASE__) {
-    throw new Response('Catalog URL not configured', { status: 400 });
+    throw new Response("Catalog URL not configured", { status: 400 });
   }
 
   const res = await fetch(`${__API_BASE__}/inventory`);
 
   if (!res.ok) {
-    throw new Response('Failed to fetch inventory', { status: res.status });
+    throw new Response("Failed to fetch inventory", { status: res.status });
   }
 
   const json = await res.json();
@@ -33,12 +33,16 @@ const router = createHashRouter(
       children: [
         {
           index: true,
-          element: <Layout />,
+          element: (
+            <FilterProvider>
+              <Layout />
+            </FilterProvider>
+          ),
           loader: inventoryLoader,
-          errorElement: <FourZeroFourNotFound error={'Catalog not found'} />,
+          errorElement: <FourZeroFourNotFound error={"Catalog not found"} />,
         },
         {
-          path: 'details/*',
+          path: "details/*",
           element: <Details />,
         },
       ],
@@ -48,13 +52,11 @@ const router = createHashRouter(
     future: {
       v7_relativeSplatPath: true,
     },
-  },
+  }
 );
 
 const App = () => (
-  <FilterProvider>
-    <RouterProvider router={router} future={{ v7_startTransition: true }} />
-  </FilterProvider>
+  <RouterProvider router={router} future={{ v7_startTransition: true }} />
 );
 
 export default App;
