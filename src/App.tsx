@@ -18,7 +18,6 @@ async function inventoryLoader({ request }: LoaderFunctionArgs) {
   console.log("Using API base URL:", __API_BASE__);
   console.log("VITE_REPO_URL:", import.meta.env.VITE_REPO_URL);
   console.log("Vite BASE_URL:", import.meta.env.BASE_URL);
-  console.log("__BASE_URL__:", __BASE_URL__);
   if (!__API_BASE__) {
     throw new Response("Catalog URL not configured", { status: 400 });
   }
