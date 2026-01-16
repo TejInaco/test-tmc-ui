@@ -44,6 +44,7 @@ const router = createHashRouter(
         {
           path: "details/*",
           element: <Details />,
+          errorElement: <FourZeroFourNotFound error={"Details not found"} />,
         },
       ],
     },
