@@ -30,6 +30,12 @@ const router = createHashRouter(
           <Outlet />
         </>
       ),
+      errorElement: (
+        <>
+          <Navbar />
+          <FourZeroFourNotFound error={"Something went wrong"} />
+        </>
+      ),
       children: [
         {
           index: true,
