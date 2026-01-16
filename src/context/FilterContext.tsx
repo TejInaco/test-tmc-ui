@@ -95,6 +95,14 @@ export const FilterProvider: React.FC<{ children: React.ReactNode }> = ({
     return () => controller.abort();
   }, []);
 
+  if (
+    repositories.length === 0 &&
+    manufacturers.length === 0 &&
+    authors.length === 0
+  ) {
+    setErrorFilters("No filter data available");
+  }
+
   return (
     <FilterContext.Provider
       value={{ repositories, manufacturers, authors, loading, errorFilters }}
