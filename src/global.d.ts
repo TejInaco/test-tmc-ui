@@ -11,7 +11,14 @@ declare module '*.svg' {
 declare const __API_BASE__: string;
 
 declare const __BASE_URL__: string;
+interface ImportMetaEnv {
+  readonly VITE_REPO_URL?: string;
+  readonly BASE_URL: string;
+}
 
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
 type Link = {
   self: string;
   content?: string;
