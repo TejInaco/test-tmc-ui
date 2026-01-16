@@ -257,7 +257,7 @@ const Layout: React.FC = () => {
                 </div>
               )}
 
-              {!loading && !errorFilters && (
+              {!errorFilters && (
                 <SideBar
                   manufacturersState={manufacturersState}
                   authorsState={authorsState}
