@@ -11,7 +11,7 @@ import Details from "./pages/Details";
 import FourZeroFourNotFound from "./components/404NotFound";
 import { FilterProvider } from "./context/FilterContext";
 
-const INVENTORY_TIMEOUT_MS = 10_000;
+const INVENTORY_TIMEOUT_MS = 500;
 
 async function inventoryLoader({ request }: LoaderFunctionArgs) {
   if (!__API_BASE__) {
