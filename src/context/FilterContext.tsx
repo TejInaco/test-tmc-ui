@@ -58,29 +58,41 @@ export const FilterProvider: React.FC<{ children: React.ReactNode }> = ({
           authorsRes.json(),
         ]);
 
-        setRepositories(
-          (reposJson.data || []).map((repo: { name: string }) => ({
+        const nextRepositories: FilterData[] = (reposJson.data || []).map(
+          (repo: { name: string }) => ({
             value: repo.name,
             label: repo.name.charAt(0).toUpperCase() + repo.name.slice(1),
             checked: false,
-          }))
+          })
         );
 
-        setManufacturers(
-          (manufacturersJson.data || []).map((manufacturer: string) => ({
-            value: manufacturer,
-            label: manufacturer.charAt(0).toUpperCase() + manufacturer.slice(1),
-            checked: false,
-          }))
-        );
+        const nextManufacturers: FilterData[] = (
+          manufacturersJson.data || []
+        ).map((manufacturer: string) => ({
+          value: manufacturer,
+          label: manufacturer.charAt(0).toUpperCase() + manufacturer.slice(1),
+          checked: false,
+        }));
 
-        setAuthors(
-          (authorsJson.data || []).map((author: string) => ({
+        const nextAuthors: FilterData[] = (authorsJson.data || []).map(
+          (author: string) => ({
             value: author,
             label: author.charAt(0).toUpperCase() + author.slice(1),
             checked: false,
-          }))
+          })
         );
+
+        setRepositories(nextRepositories);
+        setManufacturers(nextManufacturers);
+        setAuthors(nextAuthors);
+
+        if (
+          nextRepositories.length === 0 &&
+          nextManufacturers.length === 0 &&
+          nextAuthors.length === 0
+        ) {
+          setErrorFilters("No filter data available");
+        }
       } catch (err: any) {
         if (err.name !== "AbortError") {
           setErrorFilters(err.message ?? "Unknown error");
@@ -94,14 +106,6 @@ export const FilterProvider: React.FC<{ children: React.ReactNode }> = ({
     fetchFilters();
     return () => controller.abort();
   }, []);
-
-  if (
-    repositories.length === 0 &&
-    manufacturers.length === 0 &&
-    authors.length === 0
-  ) {
-    setErrorFilters("No filter data available");
-  }
 
   return (
     <FilterContext.Provider
