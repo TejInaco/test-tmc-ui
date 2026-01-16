@@ -14,6 +14,9 @@ import { FilterProvider } from "./context/FilterContext";
 const INVENTORY_TIMEOUT_MS = 500;
 
 async function inventoryLoader({ request }: LoaderFunctionArgs) {
+  console.log("Loading inventory from API...");
+  console.log("Using API base URL:", __API_BASE__);
+  console.log("__BASE_URL__:", __BASE_URL__);
   if (!__API_BASE__) {
     throw new Response("Catalog URL not configured", { status: 400 });
   }
@@ -76,7 +79,7 @@ const router = createHashRouter(
       errorElement: (
         <>
           <Navbar />
-          <FourZeroFourNotFound error={"Something went wrong"} />
+          <FourZeroFourNotFound error={"Settings not defined"} />
         </>
       ),
       children: [
