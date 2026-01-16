@@ -23,7 +23,8 @@ const Layout: React.FC = () => {
 
   const [query, setQuery] = useState("");
 
-  const { repositories, manufacturers, authors } = useFilters();
+  const { repositories, manufacturers, authors, loading, errorFilters } =
+    useFilters();
 
   const [repositoriesState, setRepositoriesState] = useState<FilterData[]>([]);
   const [manufacturersState, setManufacturersState] = useState<FilterData[]>(
@@ -248,16 +249,26 @@ const Layout: React.FC = () => {
               className="w-full rounded-lg p-4 shadow-sm outline outline-1 -outline-offset-1 outline-gray-200 lg:w-1/4"
               aria-label="Filters"
             >
-              <SideBar
-                manufacturersState={manufacturersState}
-                authorsState={authorsState}
-                repositoriesState={repositoriesState}
-                protocolsState={protocolsState}
-                onFilterChange={handleFilterChange}
-                onAddProtocol={(protocol) => {
-                  setProtocolsState((prev) => [...prev, protocol]);
-                }}
-              />
+              {loading && <div style={{ padding: 12 }}>Loading filters…</div>}
+
+              {errorFilters && (
+                <div style={{ padding: 12 }}>
+                  <strong>Filters unavailable:</strong> {errorFilters}
+                </div>
+              )}
+
+              {!loading && !errorFilters && (
+                <SideBar
+                  manufacturersState={manufacturersState}
+                  authorsState={authorsState}
+                  repositoriesState={repositoriesState}
+                  protocolsState={protocolsState}
+                  onFilterChange={handleFilterChange}
+                  onAddProtocol={(protocol) => {
+                    setProtocolsState((prev) => [...prev, protocol]);
+                  }}
+                />
+              )}
             </aside>
 
             {/* Results */}
