@@ -18,7 +18,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  REPO_URL: wot-oss/example-catalog
+  REPO_URL: TejInaco/example-catalog
+  REQUIRED_FILES: tmnames.txt,tmauthors.txt,tmprotocols.txt,tmmanufacturers.txt
 
 jobs:
   deploy-tmc-ui:
@@ -37,6 +38,46 @@ jobs:
           repository: ${{ env.REPO_URL }}
           path: temp-repo
           fetch-depth: 1
+
+      - name: Verify required files exist
+        run: |
+          if [ -z "${REQUIRED_FILES:-}" ]; then
+            echo "Error: REQUIRED_FILES env var is empty"
+            exit 1
+          fi
+
+          if [ ! -d "temp-repo/.tmc" ]; then
+            echo "Error: Required folder .tmc/ not found in the external repository"
+            exit 1
+          fi
+
+          missing=0
+          required_files="${REQUIRED_FILES//,/ }"
+
+          echo "Validating required files in external repository checkout:"
+          echo "$required_files" | tr ' ' '\n' | sed '/^$/d' | sed 's|^|- |'
+
+          for file in $required_files; do
+            file="$(echo "$file" | xargs)"
+            [ -z "$file" ] && continue
+
+            if [[ "$file" == */* ]]; then
+              candidate_path="$file"
+            else
+              candidate_path=".tmc/$file"
+            fi
+
+            if [ ! -f "temp-repo/$candidate_path" ]; then
+              echo "Error: Required file not found: $candidate_path"
+              missing=1
+            fi
+          done
+
+          if [ "$missing" -ne 0 ]; then
+            exit 1
+          fi
+
+          echo "Requirement satisfied: all required files are present"
 
       - name: Fetch files from external repository
         run: |
