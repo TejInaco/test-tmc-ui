@@ -27,7 +27,7 @@
     /* Modules */
     "module": "ESNext" /* Specify what module code is generated. */,
     // "rootDir": "./",                                  /* Specify the root folder within your source files. */
-    "moduleResolution": "Bundler",                       /* Specify how TypeScript looks up a file from a given module specifier. */
+    "moduleResolution": "Bundler" /* Specify how TypeScript looks up a file from a given module specifier. */,
     "baseUrl": "./src" /* Specify the base directory to resolve non-relative module names. */,
     "paths": {
       "@/*": ["src/*"],
@@ -105,6 +105,6 @@
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
     "skipLibCheck": true /* Skip type checking all .d.ts files. */
   },
-  "include": ["src/global.d.ts", "src/**/*", "src/*.ts", "src/*.tsx"],
+  "include": ["src/global.d.ts", "src/**/*.ts", "src/*.ts", "src/*.tsx"],
   "exclude": ["build", "node_modules"]
 }

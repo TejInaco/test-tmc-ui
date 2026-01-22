@@ -5,16 +5,13 @@ import GridList from "../components/GridList";
 import Search from "../components/Search";
 import SideBar from "../components/SideBar";
 import Pagination from "../components/Pagination";
-import {
-  INVENTORY_ENDPOINT,
-  PROTOCOLS,
-  PROTOCOLS_FILTER,
-} from "../utils/constants";
+import { INVENTORY_ENDPOINT, PROTOCOLS_FILTER } from "../utils/constants";
 
 const Layout: React.FC = () => {
   const loadedItems = useLoaderData() as Item[];
-  const [items, setItems] = useState<Item[]>(loadedItems);
 
+  const [items, setItems] = useState<Item[]>(loadedItems);
+  console.log("Loaded", items);
   const navigation = useNavigation();
   const isLoading = navigation.state === "loading";
 
@@ -23,15 +20,21 @@ const Layout: React.FC = () => {
 
   const [query, setQuery] = useState("");
 
-  const { repositories, manufacturers, authors, loading, errorFilters } =
-    useFilters();
+  const {
+    repositories,
+    manufacturers,
+    authors,
+    protocols,
+    loading,
+    errorFilters,
+  } = useFilters();
 
   const [repositoriesState, setRepositoriesState] = useState<FilterData[]>([]);
   const [manufacturersState, setManufacturersState] = useState<FilterData[]>(
     []
   );
   const [authorsState, setAuthorsState] = useState<FilterData[]>([]);
-  const [protocolsState, setProtocolsState] = useState<FilterData[]>(PROTOCOLS);
+  const [protocolsState, setProtocolsState] = useState<FilterData[]>(protocols);
 
   const [protocolFilteredItems, setProtocolFilteredItems] = useState<
     Item[] | null

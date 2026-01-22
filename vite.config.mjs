@@ -13,7 +13,7 @@ export default defineConfig(({ mode }) => {
     plugins: [react({ include: /\.(mdx|js|jsx|ts|tsx)$/ })],
     define: {
       __API_BASE__: JSON.stringify(API_BASE),
-      __BASE_URL__: JSON.stringify(""),
+      __REPO_URL__: JSON.stringify(""),
     },
   };
 });

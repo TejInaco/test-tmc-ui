@@ -1,55 +1,63 @@
-import { useEffect, useState } from 'react';
-import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
-import { MinusIcon, PlusIcon } from '@heroicons/react/24/outline';
-import { useParams, useLocation } from 'react-router-dom';
-import { THING_MODEL_ENDPOINT } from '../utils/constants';
-import defaultImage from '../assets/default-image.png';
-import FieldCard from '../components/base/FieldCard';
-import DialogAction from '../components/Dialog';
-import type { ThingDescription } from 'wot-typescript-definitions';
+import { useEffect, useState } from "react";
+import {
+  Disclosure,
+  DisclosureButton,
+  DisclosurePanel,
+} from "@headlessui/react";
+import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { useParams, useLocation } from "react-router-dom";
+import { THING_MODEL_ENDPOINT } from "../utils/constants";
+import defaultImage from "../assets/default-image.png";
+import FieldCard from "../components/base/FieldCard";
+import DialogAction from "../components/Dialog";
+import type { ThingDescription } from "wot-typescript-definitions";
 
 const DEFAULT_IMAGE_SRC = defaultImage;
 
 const Details = () => {
   const params = useParams();
-  const fetchName = (params['*'] ?? params.name ?? '') as string;
+  const fetchName = (params["*"] ?? params.name ?? "") as string;
 
   const location = useLocation();
-  const stateItem = location.state && (location.state as { item?: Item; imageSrc?: string }).item;
+  const stateItem =
+    location.state &&
+    (location.state as { item?: Item; imageSrc?: string }).item;
   const stateImageSrc =
-    location.state && (location.state as { item?: Item; imageSrc?: string }).imageSrc;
+    location.state &&
+    (location.state as { item?: Item; imageSrc?: string }).imageSrc;
 
   const [item] = useState<Item | undefined>(stateItem);
   const [imageSrc] = useState<string>(stateImageSrc ?? DEFAULT_IMAGE_SRC);
 
   const [loading, setLoading] = useState<boolean>(!stateItem);
   const [error, setError] = useState<string | null>(null);
-  const [fullDescription, setFullDescription] = useState<ThingDescription | null>(null);
+  const [fullDescription, setFullDescription] =
+    useState<ThingDescription | null>(null);
 
   const [openWith, setOpenWith] = useState(false);
 
   function useThingDetailsSections(td: ThingDescription | null) {
     return [
-      { name: 'Properties', items: Object.keys(td?.properties ?? {}) },
-      { name: 'Actions', items: Object.keys(td?.actions ?? {}) },
-      { name: 'Events', items: Object.keys(td?.events ?? {}) },
+      { name: "Properties", items: Object.keys(td?.properties ?? {}) },
+      { name: "Actions", items: Object.keys(td?.actions ?? {}) },
+      { name: "Events", items: Object.keys(td?.events ?? {}) },
     ];
   }
 
   useEffect(() => {
     if (!fetchName) {
-      setError('Missing item id.');
+      setError("Missing item id.");
       setLoading(false);
       return;
     }
     if (!__API_BASE__) {
-      setError('No catalog configured.');
+      setError("No catalog configured.");
       setLoading(false);
       return;
     }
 
     if (!item) {
-      setError('No item found.');
+      setError("No item found.");
       setLoading(false);
       return;
     }
@@ -58,17 +66,17 @@ const Details = () => {
     (async () => {
       try {
         const res = await fetch(
-          `${__API_BASE__}/${THING_MODEL_ENDPOINT}/${encodeURIComponent(fetchName)}`,
+          `${__API_BASE__}/${THING_MODEL_ENDPOINT}/${encodeURIComponent(fetchName)}`
         );
         if (!res.ok) {
-          setError('Item not found.');
+          setError("Item not found.");
           setLoading(false);
           return;
         }
         const json = await res.json();
         setFullDescription(json.data ?? json);
       } catch {
-        setError('Failed to load item.');
+        setError("Failed to load item.");
       } finally {
         setLoading(false);
       }
@@ -79,12 +87,13 @@ const Details = () => {
     if (!fetchName || !__API_BASE__) return;
 
     const url = `${__API_BASE__}/${THING_MODEL_ENDPOINT}/${encodeURIComponent(fetchName)}`;
-    window.open(url, '_blank', 'noopener,noreferrer');
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   const sections = useThingDetailsSections(fullDescription);
 
-  if (loading) return <div className="p-6 text-sm text-gray-600">Loading...</div>;
+  if (loading)
+    return <div className="p-6 text-sm text-gray-600">Loading...</div>;
   if (error) return <div className="p-6 text-sm text-red-600">{error}</div>;
   if (!item) return null;
 
@@ -123,16 +132,25 @@ const Details = () => {
             {/* Right: flexible content */}
             <div className="mt-0 flex-1 px-4 text-textGray sm:px-0">
               <FieldCard label="Name" value={item.tmName} />
-              <FieldCard label="Author" value={item['schema:author']?.['schema:name'] ?? '—'} />
+              <FieldCard
+                label="Author"
+                value={item["schema:author"]?.["schema:name"] ?? "—"}
+              />
               <FieldCard label="Repository" value={item.repo} />
-              <FieldCard label="MPN" value={item['schema:mpn']} />
+              <FieldCard label="MPN" value={item["schema:mpn"]} />
               <FieldCard
                 label="Number of Versions"
-                value={item.versions?.length.toString() ?? '0'}
+                value={item.versions?.length.toString() ?? "0"}
               />
-              <FieldCard label="Current Version" value={item.versions?.[0].version.model ?? '—'} />
-              <FieldCard label="Description" value={item.versions?.[0].description ?? '—'} />
-              <FieldCard label="ID" value={fullDescription?.id ?? '—'} />
+              <FieldCard
+                label="Current Version"
+                value={item.versions?.[0].version.model ?? "—"}
+              />
+              <FieldCard
+                label="Description"
+                value={item.versions?.[0].description ?? "—"}
+              />
+              <FieldCard label="ID" value={fullDescription?.id ?? "—"} />
               <section aria-labelledby="details-heading" className="mt-12">
                 <h2 id="details-heading" className="">
                   Additional details
@@ -160,7 +178,9 @@ const Details = () => {
                       </h3>
                       <DisclosurePanel className="pb-6">
                         {detail.items.length === 0 ? (
-                          <p className="pl-5 text-sm text-textLabel">No data to display</p>
+                          <p className="pl-5 text-sm text-textLabel">
+                            No data to display
+                          </p>
                         ) : (
                           <ul
                             role="list"
