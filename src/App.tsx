@@ -1,12 +1,31 @@
 import React from "react";
-import { createHashRouter, RouterProvider, Outlet } from "react-router-dom";
+import {
+  createHashRouter,
+  RouterProvider,
+  Outlet,
+  useLoaderData,
+} from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Layout from "./pages/Layout";
 import Details from "./pages/Details";
 import FourZeroFourNotFound from "./components/404NotFound";
 import { FilterProvider } from "./context/FilterContext";
-import { inventoryLoader } from "./services/inventoryLoader";
+import { dataLoader } from "./services/dataLoader";
 
+function DeploymentTypeConfiguration() {
+  const { deploymentType, inventory } = useLoaderData() as IDataLoader;
+  return (
+    <FilterProvider
+      deploymentType={deploymentType}
+      baseUrl={import.meta.env.BASE_URL}
+    >
+      <Layout
+        deploymentType={deploymentType}
+        loadedItems={inventory as Item[]}
+      />
+    </FilterProvider>
+  );
+}
 const router = createHashRouter(
   [
     {
@@ -25,12 +44,8 @@ const router = createHashRouter(
       children: [
         {
           index: true,
-          element: (
-            <FilterProvider>
-              <Layout />
-            </FilterProvider>
-          ),
-          loader: inventoryLoader,
+          element: <DeploymentTypeConfiguration />,
+          loader: dataLoader,
           errorElement: <FourZeroFourNotFound error={"Catalog not found"} />,
         },
         {

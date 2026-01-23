@@ -1,0 +1,8 @@
+dist/
+build/
+node_modules/
+coverage/
+.vite/
+
+# external / generated
+public/

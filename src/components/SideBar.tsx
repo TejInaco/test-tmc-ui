@@ -1,15 +1,24 @@
-import React, { useMemo, useState, useEffect } from 'react';
-import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
-import { MinusIcon, PlusIcon, ChevronUpIcon } from '@heroicons/react/20/solid';
-import FilterOptions from './FilterOptions';
+import React, { useMemo, useState, useEffect } from "react";
+import {
+  Disclosure,
+  DisclosureButton,
+  DisclosurePanel,
+} from "@headlessui/react";
+import { MinusIcon, PlusIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
+import FilterOptions from "./FilterOptions";
 
 interface SideBarProps {
   manufacturersState: Array<FilterData>;
   authorsState: Array<FilterData>;
   repositoriesState: Array<FilterData>;
   protocolsState: Array<FilterData>;
-  onFilterChange: (sectionId: string, optionValue: string, checked: boolean) => void;
+  onFilterChange: (
+    sectionId: string,
+    optionValue: string,
+    checked: boolean
+  ) => void;
   onAddProtocol?: (protocol: FilterData) => void;
+  deploymentType: DeploymentType;
 }
 
 const SideBar: React.FC<SideBarProps> = ({
@@ -19,17 +28,18 @@ const SideBar: React.FC<SideBarProps> = ({
   protocolsState,
   onFilterChange,
   onAddProtocol,
+  deploymentType,
 }) => {
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   const filters = useMemo<Filters>(
     () => [
-      { id: 'protocol', name: 'Protocol', options: protocolsState },
-      { id: 'manufacturer', name: 'Manufacturer', options: manufacturersState },
-      { id: 'author', name: 'Author', options: authorsState },
-      { id: 'repository', name: 'Repository', options: repositoriesState },
+      { id: "protocol", name: "Protocol", options: protocolsState },
+      { id: "manufacturer", name: "Manufacturer", options: manufacturersState },
+      { id: "author", name: "Author", options: authorsState },
+      { id: "repository", name: "Repository", options: repositoriesState },
     ],
-    [protocolsState, manufacturersState, authorsState, repositoriesState],
+    [protocolsState, manufacturersState, authorsState, repositoriesState]
   );
 
   useEffect(() => {
@@ -37,18 +47,20 @@ const SideBar: React.FC<SideBarProps> = ({
       setShowScrollTop(window.scrollY > 300);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
     <div className="w-full">
       <div className="flex items-baseline justify-between border-b border-gray-200 pb-6">
-        <h1 className="text-3xl font-bold tracking-tight text-textValue">Filters</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-textValue">
+          Filters
+        </h1>
       </div>
 
       <section aria-labelledby="products-heading" className="pb-24 pt-6">
@@ -56,10 +68,16 @@ const SideBar: React.FC<SideBarProps> = ({
           {/* Filters */}
           <form className="hidden lg:block">
             {filters.map((section) => (
-              <Disclosure key={section.id} as="div" className="border-b border-gray-200 py-6">
+              <Disclosure
+                key={section.id}
+                as="div"
+                className="border-b border-gray-200 py-6"
+              >
                 <h3 className="-my-3 flow-root">
                   <DisclosureButton className="group flex w-full items-center justify-between bg-bgBodyPrimary py-3 text-sm">
-                    <span className="font-medium text-textLabel">{section.name}</span>
+                    <span className="font-medium text-textLabel">
+                      {section.name}
+                    </span>
                     <span className="ml-6 flex items-center">
                       <PlusIcon
                         aria-hidden="true"
@@ -73,12 +91,20 @@ const SideBar: React.FC<SideBarProps> = ({
                   </DisclosureButton>
                 </h3>
                 <DisclosurePanel className="bg-bgBodyPrimary pt-6">
-                  <FilterOptions
-                    sectionId={section.id}
-                    options={section.options}
-                    onOptionChange={onFilterChange}
-                    onAddProtocol={onAddProtocol}
-                  />
+                  {section.id === "protocol" &&
+                  deploymentType !== "SERVER_AVAILABLE" ? (
+                    <p className="text-textSecondary mb-4 text-sm">
+                      Protocol filtering is only available when connected to a
+                      backend server.
+                    </p>
+                  ) : (
+                    <FilterOptions
+                      sectionId={section.id}
+                      options={section.options}
+                      onOptionChange={onFilterChange}
+                      onAddProtocol={onAddProtocol}
+                    />
+                  )}
                 </DisclosurePanel>
               </Disclosure>
             ))}

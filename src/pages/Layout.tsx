@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useFilters } from "../context/FilterContext";
-import { useLoaderData, useNavigation } from "react-router-dom";
+import { useNavigation } from "react-router-dom";
 import GridList from "../components/GridList";
 import Search from "../components/Search";
 import SideBar from "../components/SideBar";
 import Pagination from "../components/Pagination";
 import { INVENTORY_ENDPOINT, PROTOCOLS_FILTER } from "../utils/constants";
 
-const Layout: React.FC = () => {
-  const loadedItems = useLoaderData() as Item[];
-
+const Layout: React.FC<{
+  deploymentType: DeploymentType;
+  loadedItems: Item[];
+}> = ({ deploymentType, loadedItems }) => {
   const [items, setItems] = useState<Item[]>(loadedItems);
   console.log("Loaded", items);
   const navigation = useNavigation();
@@ -26,7 +27,7 @@ const Layout: React.FC = () => {
     authors,
     protocols,
     loading,
-    errorFilters,
+    errorFetchData,
   } = useFilters();
 
   const [repositoriesState, setRepositoriesState] = useState<FilterData[]>([]);
@@ -65,40 +66,8 @@ const Layout: React.FC = () => {
   }, [authors]);
 
   useEffect(() => {
-    const controller = new AbortController();
+    if (deploymentType !== "SERVER_AVAILABLE") return;
 
-    const fetchCatalog = async () => {
-      try {
-        const FILE = ".tmc/tm-catalog.toc.json";
-
-        // BASE_URL already includes the repo base on GitHub Pages (e.g. "/test-tmc-ui/")
-        //const url = `public/${__BASE_URL__}${FILE}`;
-
-        console.log("Fetching catalog from:", FILE);
-
-        const res = await fetch(FILE, { signal: controller.signal });
-        if (!res.ok)
-          throw new Error(
-            `Catalog fetch failed: ${res.status} ${res.statusText}`
-          );
-
-        const data = await res.json();
-        console.log("Fetched catalog data:", data);
-
-        return data;
-      } catch (e: any) {
-        if (e?.name !== "AbortError") console.error(e);
-        return null;
-      }
-    };
-
-    fetchCatalog();
-
-    return () => controller.abort();
-  }, []);
-
-  useEffect(() => {
-    if (!__API_BASE__) return;
     if (selectedProtocols.length === 0) {
       setProtocolFilteredItems(null);
       return;
@@ -108,6 +77,7 @@ const Layout: React.FC = () => {
       : "";
 
     const controller = new AbortController();
+
     const fetchProtocols = async () => {
       try {
         const fp = encodeURIComponent(filterProtocols);
@@ -124,9 +94,11 @@ const Layout: React.FC = () => {
         if (e.name !== "AbortError") console.error(e);
       }
     };
+
     fetchProtocols();
+
     return () => controller.abort();
-  }, [selectedProtocols]);
+  }, [selectedProtocols, deploymentType]);
 
   const filteredItems = useMemo<Item[]>(() => {
     const checkedRepositories = repositoriesState
@@ -236,12 +208,14 @@ const Layout: React.FC = () => {
           >
             <div className="hidden md:block md:w-1/4 lg:w-1/5" />
             <div className="w-full md:w-2/4 lg:w-3/5">
-              <Search
-                query={query}
-                onSearch={setQuery}
-                onResultsChange={handleSearchResults}
-                baseItems={loadedItems}
-              />
+              {deploymentType === "SERVER_AVAILABLE" && (
+                <Search
+                  query={query}
+                  onSearch={setQuery}
+                  onResultsChange={handleSearchResults}
+                  baseItems={loadedItems}
+                />
+              )}
             </div>
             <div className="hidden md:block md:w-1/4 lg:w-1/5" />
           </div>
@@ -254,13 +228,13 @@ const Layout: React.FC = () => {
             >
               {loading && <div style={{ padding: 12 }}>Loading filters…</div>}
 
-              {errorFilters && (
+              {errorFetchData && (
                 <div style={{ padding: 12 }}>
-                  <strong>Filters unavailable:</strong> {errorFilters}
+                  <strong>Filters unavailable:</strong> {errorFetchData}
                 </div>
               )}
 
-              {!errorFilters && (
+              {!errorFetchData && (
                 <SideBar
                   manufacturersState={manufacturersState}
                   authorsState={authorsState}
@@ -270,6 +244,7 @@ const Layout: React.FC = () => {
                   onAddProtocol={(protocol) => {
                     setProtocolsState((prev) => [...prev, protocol]);
                   }}
+                  deploymentType={deploymentType}
                 />
               )}
             </aside>

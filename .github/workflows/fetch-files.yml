@@ -18,7 +18,9 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  REPO_URL: TejInaco/example-catalog
+  SERVER_AVAILABLE: true
+  TMC-UI: wot-oss/tmc-ui  
+  CATALOG_URL: TejInaco/example-catalog
   REQUIRED_FILES: tmnames.txt,tmauthors.txt,tmprotocols.txt,tmmanufacturers.txt
 
 jobs:
@@ -35,7 +37,7 @@ jobs:
       - name: Checkout external repository
         uses: actions/checkout@v4
         with:
-          repository: ${{ env.REPO_URL }}
+          repository: ${{ env.CATALOG_URL }}
           path: temp-repo
           fetch-depth: 1
 
@@ -103,11 +105,18 @@ jobs:
           echo "=== vite.config.mjs after modification ==="
           cat vite.config.mjs
 
-      - name: Set config - __REPO_URL__ to REPO_URL
+      - name: Set config step 1 - __CATALOG_URL__ to CATALOG_URL
         run: |
-          echo "Setting __REPO_URL__ to: $REPO_URL"
-          sed -i "s|__REPO_URL__:[[:space:]]*JSON.stringify(.*)|__REPO_URL__: JSON.stringify(\"$REPO_URL\")|g" vite.config.mjs
-          echo "=== vite.config.mjs after __REPO_URL__ update ==="
+          echo "Setting __CATALOG_URL__ to: $CATALOG_URL"
+          sed -i "s|__CATALOG_URL__:[[:space:]]*JSON.stringify(.*)|__CATALOG_URL__: JSON.stringify(\"$CATALOG_URL\")|g" vite.config.mjs
+          echo "=== vite.config.mjs after __CATALOG_URL__ update ==="
+          cat vite.config.mjs
+
+      - name: Set config step 2 - __SERVER_AVAILABLE__ to SERVER_AVAILABLE
+        run: |
+          echo "Setting __SERVER_AVAILABLE__ to: $SERVER_AVAILABLE"
+          sed -i -E "s|(__SERVER_AVAILABLE__:[[:space:]]*)JSON\.stringify\([^)]*\)([[:space:]]*,?)|\1$SERVER_AVAILABLE\2|g" vite.config.mjs
+          echo "=== vite.config.mjs after __SERVER_AVAILABLE__ update ==="
           cat vite.config.mjs
 
       - name: Install dependencies

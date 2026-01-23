@@ -1,14 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import {
-  AUTHOR_ENDPOINT,
-  MANUFACTURER_ENDPOINT,
-  REPOSITORY_ENDPOINT,
-  AUTHORS_FILENAME,
-  MANUFACTURERS_FILENAME,
-  PROTOCOLS_FILENAME,
-  PROTOCOLS,
-} from "../utils/constants";
-import { fetchDataFromTxT } from "../services/filtersLoader";
+import { PROTOCOLS } from "../utils/constants";
+import { fetchApiDataFilters } from "../services/apiData";
+import { fetchLocalDataFilters } from "../services/localData";
 
 interface FilterContextType {
   repositories: FilterData[];
@@ -16,20 +9,27 @@ interface FilterContextType {
   authors: FilterData[];
   protocols: FilterData[];
   loading: boolean;
-  errorFilters: string | null;
+  errorFetchData: string | null;
+}
+
+interface FilterProviderProps {
+  readonly children: React.ReactNode;
+  readonly deploymentType: DeploymentType;
+  readonly baseUrl: string;
 }
 
 const FilterContext = createContext<FilterContextType | undefined>(undefined);
 
-export const FilterProvider: React.FC<{ children: React.ReactNode }> = ({
+export const FilterProvider: React.FC<FilterProviderProps> = ({
   children,
+  deploymentType,
 }) => {
   const [repositories, setRepositories] = useState<FilterData[]>([]);
   const [manufacturers, setManufacturers] = useState<FilterData[]>([]);
   const [authors, setAuthors] = useState<FilterData[]>([]);
   const [protocols, setProtocols] = useState<FilterData[]>(PROTOCOLS);
   const [loading, setLoading] = useState<boolean>(true);
-  const [errorFilters, setErrorFilters] = useState<string | null>(null);
+  const [errorFetchData, setErrorFetchData] = useState<string | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -37,154 +37,56 @@ export const FilterProvider: React.FC<{ children: React.ReactNode }> = ({
     const isAbortError = (err: unknown): boolean =>
       err instanceof DOMException && err.name === "AbortError";
 
-    const fetchFilters = async () => {
-      try {
-        if (!__API_BASE__) {
-          setErrorFilters("Catalog URL not configured");
-          return;
-        }
+    async function a() {
+      let nextAuthors: FilterData[] = [];
+      let nextManufacturers: FilterData[] = [];
+      let nextProtocols: FilterData[] = [];
+      let nextRepositories: FilterData[] = [];
 
-        // Parallel fetch all filter options
-        const [reposRes, manufacturersRes, authorsRes] = await Promise.all([
-          fetch(`${__API_BASE__}/${REPOSITORY_ENDPOINT}`, {
-            signal: controller.signal,
-          }),
-          fetch(`${__API_BASE__}/${MANUFACTURER_ENDPOINT}`, {
-            signal: controller.signal,
-          }),
-          fetch(`${__API_BASE__}/${AUTHOR_ENDPOINT}`, {
-            signal: controller.signal,
-          }),
-        ]);
-
-        if (!reposRes.ok || !manufacturersRes.ok || !authorsRes.ok) {
-          setErrorFilters("Failed to fetch filter data");
-          return;
-        }
-
-        const [reposJson, manufacturersJson, authorsJson] = await Promise.all([
-          reposRes.json(),
-          manufacturersRes.json(),
-          authorsRes.json(),
-        ]);
-
-        const nextRepositories: FilterData[] = (reposJson.data || []).map(
-          (repo: { name: string }) => ({
-            value: repo.name,
-            label: repo.name.charAt(0).toUpperCase() + repo.name.slice(1),
-            checked: false,
-          })
-        );
-
-        const nextManufacturers: FilterData[] = (
-          manufacturersJson.data || []
-        ).map((manufacturer: string) => ({
-          value: manufacturer,
-          label: manufacturer.charAt(0).toUpperCase() + manufacturer.slice(1),
-          checked: false,
-        }));
-
-        const nextAuthors: FilterData[] = (authorsJson.data || []).map(
-          (author: string) => ({
-            value: author,
-            label: author.charAt(0).toUpperCase() + author.slice(1),
-            checked: false,
-          })
-        );
-
-        setRepositories(nextRepositories);
-        setManufacturers(nextManufacturers);
-        setAuthors(nextAuthors);
-
-        if (
-          nextRepositories.length === 0 &&
-          nextManufacturers.length === 0 &&
-          nextAuthors.length === 0
-        ) {
-          setErrorFilters("No filter data available");
-        }
-      } catch (err: unknown) {
-        if (!isAbortError(err)) {
-          setErrorFilters(err instanceof Error ? err.message : "Unknown error");
-          console.error("Error fetching filters:", err);
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const fetchLocalInventory = async (baseUrl: string) => {
-      const nextAuthors: FilterData[] = await fetchDataFromTxT(
-        baseUrl,
-        controller.signal,
-        AUTHORS_FILENAME
-      );
-
-      setAuthors(nextAuthors);
-
-      if (nextAuthors.length === 0) {
-        setErrorFilters("No authors available");
-      }
-
-      const nextManufacturers: FilterData[] = await fetchDataFromTxT(
-        baseUrl,
-        controller.signal,
-        MANUFACTURERS_FILENAME
-      );
-
-      setManufacturers(nextManufacturers);
-
-      const nextProtocols: FilterData[] = await fetchDataFromTxT(
-        baseUrl,
-        controller.signal,
-        PROTOCOLS_FILENAME
-      );
-
-      setProtocols(nextProtocols);
-
-      // setRepositories(
-      //   (json.repositories || []).map((repo: { name: string }) => ({
-      //     value: repo.name,
-      //     label: repo.name.charAt(0).toUpperCase() + repo.name.slice(1),
-      //     checked: false,
-      //   }))
-      // );
-
-      // setManufacturers(
-      //   (json.manufacturers || []).map((manufacturer: string) => ({
-      //     value: manufacturer,
-      //     label: manufacturer.charAt(0).toUpperCase() + manufacturer.slice(1),
-      //     checked: false,
-      //   }))
-      // );
-
-      // setAuthors(
-      //   (json.authors || []).map((author: string) => ({
-      //     value: author,
-      //     label: author.charAt(0).toUpperCase() + author.slice(1),
-      //     checked: false,
-      //   }))
-      // );
-    };
-
-    const repositoryCatalogBased: string | undefined = import.meta.env.BASE_URL;
-
-    // if (repositoryCatalogBased) {
-    if (true) {
-      fetchLocalInventory(repositoryCatalogBased)
-        .catch((err: unknown) => {
+      if (
+        deploymentType === "TYPE_TMC-UI-CATALOG" ||
+        deploymentType === "TYPE_CATALOG-TMC-UI"
+      ) {
+        setLoading(true);
+        const result = await fetchLocalDataFilters(
+          import.meta.env.BASE_URL
+        ).catch((err: unknown) => {
           if (!isAbortError(err)) {
-            setErrorFilters(
+            setErrorFetchData(
               err instanceof Error ? err.message : "Unknown error"
             );
-            console.error("Error fetching local inventory:", err);
+            setLoading(false);
+            console.error("Error fetching local filters:", err);
           }
-        })
-        .finally(() => setLoading(false));
-    } else {
-      fetchFilters();
+        });
+        if (result) {
+          ({ nextProtocols, nextManufacturers, nextAuthors, nextRepositories } =
+            result);
+        }
+        setLoading(false);
+      } else {
+        setLoading(true);
+        const result = await fetchApiDataFilters().catch((err: unknown) => {
+          if (!isAbortError(err)) {
+            setErrorFetchData(
+              err instanceof Error ? err.message : "Unknown error"
+            );
+            setLoading(false);
+            console.error("Error fetching filters:", err);
+          }
+        });
+        if (result) {
+          ({ nextProtocols, nextManufacturers, nextAuthors, nextRepositories } =
+            result);
+        }
+        setLoading(false);
+      }
+      setProtocols(nextProtocols);
+      setManufacturers(nextManufacturers);
+      setAuthors(nextAuthors);
+      setRepositories(nextRepositories);
     }
-
+    a();
     return () => controller.abort();
   }, []);
 
@@ -196,7 +98,7 @@ export const FilterProvider: React.FC<{ children: React.ReactNode }> = ({
         authors,
         protocols,
         loading,
-        errorFilters,
+        errorFetchData,
       }}
     >
       {children}
