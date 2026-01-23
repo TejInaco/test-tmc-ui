@@ -4,7 +4,7 @@ import { fetchApiDataInventory } from "./apiData";
 import { fetchLocalDataInventory } from "./localData";
 
 export async function dataLoader({ request }: LoaderFunctionArgs) {
-  const deploymentType = getDeploymentType();
+  const deploymentType = getDeploymentType(import.meta.env.BASE_URL);
 
   switch (deploymentType) {
     case "SERVER_AVAILABLE": {
