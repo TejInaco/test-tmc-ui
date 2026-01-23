@@ -11,8 +11,8 @@ export async function dataLoader({ request }: LoaderFunctionArgs) {
       __DEBUG__
         ? console.warn("Fetching inventory from local backend server...")
         : null;
-      const data = await fetchApiDataInventory(__API_BASE__, request);
-      return data;
+      const inventory = await fetchApiDataInventory(__API_BASE__, request);
+      return { deploymentType, inventory };
     }
 
     case "TYPE_TMC-UI-CATALOG": {
@@ -21,17 +21,14 @@ export async function dataLoader({ request }: LoaderFunctionArgs) {
             "Fetching inventory from a repository that contains a catalog..."
           )
         : null;
-      const data = await fetchLocalDataInventory(import.meta.env.BASE_URL);
-      return data;
+      const inventory = await fetchLocalDataInventory(import.meta.env.BASE_URL);
+      return { deploymentType, inventory };
     }
     case "TYPE_CATALOG-TMC-UI": {
       console.warn(
         "Fetching inventory from local files in a catalog repository..."
       );
-      return [];
+      return { deploymentType, inventory: [] };
     }
-    default:
-      console.error("Unknown deployment type:", deploymentType);
-      return [];
   }
 }
