@@ -24,18 +24,14 @@ env:
   REQUIRED_FILES: tmnames.txt,tmauthors.txt,tmprotocols.txt,tmmanufacturers.txt
 
 jobs:
-  configuration:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  fetch-catalog:
+    if: ${{ env.CATALOG_URL != '' }}
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Checkout external repository
-
         uses: actions/checkout@v4
         with:
           repository: ${{ env.CATALOG_URL }}
@@ -84,13 +80,35 @@ jobs:
 
       - name: Fetch files from external repository
         run: |
-          pwd
           rsync -a temp-repo/ public/ --exclude '.git'
           rm -rf temp-repo
           ls -la public/
 
-      - name: Print GitHub context
-        run: echo '${{ toJSON(github) }}'
+      - name: Upload catalog public files
+        uses: actions/upload-artifact@v4
+        with:
+          name: catalog-public
+          path: public
+          if-no-files-found: error
+
+
+  configuration:
+    needs: fetch-catalog
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download catalog public files
+        if: ${{ needs.fetch-catalog.result == 'success' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: catalog-public
+          path: public
 
       - name: Set config - base path
         run: |
