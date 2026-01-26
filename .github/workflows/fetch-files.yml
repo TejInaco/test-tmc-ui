@@ -20,7 +20,7 @@ concurrency:
 env:
   SERVER_AVAILABLE: true
   TMC_UI: wot-oss/tmc-ui  
-  CATALOG_URL: TejInaco/example-catalog
+  CATALOG_URL: ""
   REQUIRED_FILES: tmnames.txt,tmauthors.txt,tmprotocols.txt,tmmanufacturers.txt
 
 jobs:
@@ -112,7 +112,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download catalog public files
-        if: ${{ needs.fetch-catalog.result == 'success' }}
+        if: ${{ needs.fetch-catalog.outputs.catalog_enabled == 'true' }}
         uses: actions/download-artifact@v4
         with:
           name: catalog-public
