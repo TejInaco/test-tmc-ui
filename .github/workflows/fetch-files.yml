@@ -20,7 +20,7 @@ concurrency:
 env:
   SERVER_AVAILABLE: false
   TMC_UI: wot-oss/tmc-ui  
-  CATALOG_URL: "wot-oss/example-catalog"
+  CATALOG_URL: "TejInaco/example-catalog"
   REQUIRED_FILES: tmnames.txt,tmauthors.txt,tmprotocols.txt,tmmanufacturers.txt
 
 jobs:
