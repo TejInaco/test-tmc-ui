@@ -93,6 +93,7 @@ jobs:
           rsync -a temp-repo/ public/ --exclude '.git'
           rm -rf temp-repo
           ls -la public/
+          ls -la public/.tmc/
 
       - name: Upload catalog public files
         if: ${{ steps.catalog-gate.outputs.catalog_enabled == 'true' }}
@@ -100,6 +101,7 @@ jobs:
         with:
           name: catalog-public
           path: public
+          include-hidden-files: true
           if-no-files-found: error
 
 
