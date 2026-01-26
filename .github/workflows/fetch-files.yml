@@ -121,7 +121,6 @@ jobs:
 
       - name: Set config - base path
         run: |
-          cat vite.config.mjs
           sed -i "s|return {|return {\n    base: '/${{ github.event.repository.name }}/',|" vite.config.mjs
           echo "=== vite.config.mjs after modification ==="
           cat vite.config.mjs
