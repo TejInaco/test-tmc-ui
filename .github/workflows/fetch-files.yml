@@ -147,6 +147,7 @@ jobs:
         with:
           name: configured-workspace
           path: .
+          include-hidden-files: true
           if-no-files-found: error
 
   deploy-tmc-ui:
