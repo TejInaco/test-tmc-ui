@@ -136,7 +136,7 @@ jobs:
         shell: bash
         run: |
           echo "Setting __SERVER_AVAILABLE__ to: $SERVER_AVAILABLE"
-          sed -i "s|(__SERVER_AVAILABLE__:[[:space:]]*)(true|false)|\1$SERVER_AVAILABLE|g" vite.config.mjs
+          sed -i "s#(__SERVER_AVAILABLE__:[[:space:]]*)(true|false)#\1$SERVER_AVAILABLE#g" vite.config.mjs
           echo "=== vite.config.mjs after __SERVER_AVAILABLE__ update ==="
           cat vite.config.mjs
 
