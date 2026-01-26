@@ -95,6 +95,7 @@ jobs:
           ls -la public/
 
       - name: Upload catalog public files
+        if: ${{ steps.catalog-gate.outputs.catalog_enabled == 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: catalog-public
