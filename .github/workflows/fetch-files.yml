@@ -125,17 +125,17 @@ jobs:
           echo "=== vite.config.mjs after modification ==="
           cat vite.config.mjs
 
-      - name: Set config step 1 - __CATALOG_URL__ to CATALOG_URL
+      - name: Set config step 1 - CATALOG_URL to __CATALOG_URL__  
         run: |
           echo "Setting __CATALOG_URL__ to: $CATALOG_URL"
           sed -i "s|__CATALOG_URL__:[[:space:]]*JSON.stringify(.*)|__CATALOG_URL__: JSON.stringify(\"$CATALOG_URL\")|g" vite.config.mjs
           echo "=== vite.config.mjs after __CATALOG_URL__ update ==="
           cat vite.config.mjs
 
-      - name: Set config step 2 - __SERVER_AVAILABLE__ to SERVER_AVAILABLE
+      - name: Set config step 2 -  SERVER_AVAILABLE to __SERVER_AVAILABLE__
         run: |
           echo "Setting __SERVER_AVAILABLE__ to: $SERVER_AVAILABLE"
-          sed -i -E "s|(__SERVER_AVAILABLE__:[[:space:]]*)JSON\.stringify\([^)]*\)([[:space:]]*,?)|\1$SERVER_AVAILABLE\2|g" vite.config.mjs
+          sed -i -E "s|(__SERVER_AVAILABLE__:[[:space:]]*)(true|false)([[:space:]]*,)|\1$SERVER_AVAILABLE\3|g" vite.config.mjs
           echo "=== vite.config.mjs after __SERVER_AVAILABLE__ update ==="
           cat vite.config.mjs
 
