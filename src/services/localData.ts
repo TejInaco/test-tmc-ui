@@ -118,7 +118,10 @@ export async function fetchLocalThingModel(
 ): Promise<ThingDescription> {
   console.log("Fetching local Thing Model from path:", fullpath);
 
-  const relativePath = `${normalizeRelativePathSegment(fullpath)}`;
+  const basePath = import.meta.env.BASE_URL || "/";
+  const urlBase = `${basePath}${fullpath.startsWith("/") ? fullpath.slice(1) : fullpath}`;
+
+  const relativePath = `${normalizeRelativePathSegment(basePath)}${urlBase}`;
   const url = new URL(
     `/${normalizeRelativePathSegment(relativePath)}`,
     window.location.origin
