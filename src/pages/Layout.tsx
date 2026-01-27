@@ -294,6 +294,7 @@ const Layout: React.FC<{
                 items={paginatedItems}
                 loading={isLoading}
                 error={error}
+                deploymentType={deploymentType}
               />
 
               <Pagination

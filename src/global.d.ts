@@ -32,6 +32,10 @@ interface IDataLoader {
   readonly inventory: readonly unknown[];
 }
 
+interface ItemExtended extends Item {
+  name?: string;
+}
+
 type Link = {
   self: string;
   content?: string;

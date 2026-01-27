@@ -9,10 +9,9 @@ import {
   MANUFACTURERS_FILENAME,
   PROTOCOLS_FILENAME,
 } from "../utils/constants";
+import { type ThingDescription } from "wot-typescript-definitions";
 
-export async function fetchLocalDataFilters(
-  baseUrl: string
-): Promise<{
+export async function fetchLocalDataFilters(baseUrl: string): Promise<{
   nextProtocols: FilterData[];
   nextManufacturers: FilterData[];
   nextAuthors: FilterData[];
@@ -112,4 +111,29 @@ export async function fetchDataFromTxT(
     label: valueLine.charAt(0).toUpperCase() + valueLine.slice(1),
     checked: false,
   }));
+}
+
+export async function fetchLocalThingModel(
+  fullpath: string
+): Promise<ThingDescription> {
+  console.log("Fetching local Thing Model from path:", fullpath);
+
+  const relativePath = `${normalizeRelativePathSegment(fullpath)}`;
+  const url = new URL(
+    `/${normalizeRelativePathSegment(relativePath)}`,
+    window.location.origin
+  );
+
+  console.log("Fetching local Thing Model from URL:", url.toString());
+  const res = await fetch(url.toString());
+  if (!res.ok) {
+    throw new Response("Failed to fetch local Thing Model", {
+      status: res.status,
+    });
+  }
+
+  const json: unknown = await res.json();
+  console.log("Fetched local Thing Model JSON:", json);
+
+  return json as ThingDescription;
 }

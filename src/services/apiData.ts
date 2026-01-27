@@ -1,9 +1,11 @@
+import { type ThingDescription } from "wot-typescript-definitions";
 import {
   INVENTORY_TIMEOUT_MS,
   INVENTORY_ENDPOINT,
   REPOSITORY_ENDPOINT,
   MANUFACTURER_ENDPOINT,
   AUTHOR_ENDPOINT,
+  THING_MODEL_ENDPOINT,
 } from "../utils/constants";
 
 export async function fetchApiDataFilters(): Promise<{
@@ -119,5 +121,35 @@ export async function fetchApiDataInventory(
   } finally {
     clearTimeout(timeoutId);
     request.signal.removeEventListener("abort", abortFromRouter);
+  }
+}
+
+export async function fetchApiThingModel(
+  baseUrl: string | undefined,
+  itemName: string
+): Promise<ThingDescription> {
+  if (!baseUrl) {
+    throw new Error("Catalog URL not configured");
+  }
+
+  if (!itemName) {
+    throw new Error("Missing item name");
+  }
+
+  try {
+    const res = await fetch(
+      `${baseUrl}/${THING_MODEL_ENDPOINT}/${encodeURIComponent(itemName)}`
+    );
+
+    if (!res.ok) {
+      throw new Error("Item not found");
+    }
+
+    const json = await res.json();
+    return json.data ?? json;
+  } catch (err: unknown) {
+    throw new Error(
+      err instanceof Error ? err.message : "Failed to load thing model"
+    );
   }
 }
