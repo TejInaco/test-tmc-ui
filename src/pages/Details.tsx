@@ -13,7 +13,7 @@ import DialogAction from "../components/Dialog";
 import { fetchApiThingModel } from "../services/apiData";
 import type { ThingDescription } from "wot-typescript-definitions";
 import { fetchLocalThingModel } from "../services/localData";
-import { normalizeRelativePathSegment } from "utils/strings";
+import { normalizeRelativePathSegment } from "../utils/strings";
 
 const DEFAULT_IMAGE_SRC = defaultImage;
 
