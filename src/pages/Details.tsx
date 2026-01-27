@@ -122,7 +122,7 @@ const Details = () => {
     if (!fetchName || !__API_BASE__) return;
 
     if (deploymentType !== "SERVER_AVAILABLE") {
-      const url = `${window.location.origin}/${import.meta.env.BASE_URL}/${item.versions?.[0].links.content}`;
+      const url = `${window.location.origin}${import.meta.env.BASE_URL}${item.versions?.[0].links.content}`;
       console.log(import.meta.env.BASE_URL);
       console.log("Opening URL:", url);
       window.open(url, "_blank", "noopener,noreferrer");
