@@ -13,6 +13,7 @@ import DialogAction from "../components/Dialog";
 import { fetchApiThingModel } from "../services/apiData";
 import type { ThingDescription } from "wot-typescript-definitions";
 import { fetchLocalThingModel } from "../services/localData";
+import { normalizeRelativePathSegment } from "utils/strings";
 
 const DEFAULT_IMAGE_SRC = defaultImage;
 
@@ -122,7 +123,7 @@ const Details = () => {
     if (!fetchName || !__API_BASE__) return;
 
     if (deploymentType !== "SERVER_AVAILABLE") {
-      const url = `${window.location.origin}${import.meta.env.BASE_URL}${item.versions?.[0].links.content}`;
+      const url = `${window.location.origin}${normalizeRelativePathSegment(import.meta.env.BASE_URL)}${item.versions?.[0].links.content}`;
       console.log(import.meta.env.BASE_URL);
       console.log("Opening URL:", url);
       window.open(url, "_blank", "noopener,noreferrer");
