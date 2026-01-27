@@ -121,9 +121,8 @@ export async function fetchLocalThingModel(
   const basePath = import.meta.env.BASE_URL || "/";
   const urlBase = `${basePath}${fullpath.startsWith("/") ? fullpath.slice(1) : fullpath}`;
 
-  const relativePath = `${normalizeRelativePathSegment(basePath)}${urlBase}`;
   const url = new URL(
-    `/${normalizeRelativePathSegment(relativePath)}`,
+    `/${normalizeRelativePathSegment(urlBase)}`,
     window.location.origin
   );
 
