@@ -120,11 +120,8 @@ export async function fetchLocalThingModel(
 
   const basePath = import.meta.env.BASE_URL || "/";
   const urlBase = `${basePath}${fullpath.startsWith("/") ? fullpath.slice(1) : fullpath}`;
-
-  const url = new URL(
-    `/${normalizeRelativePathSegment(urlBase)}`,
-    window.location.origin
-  );
+  console.log("Computed URL base for Thing Model:", urlBase);
+  const url = new URL(`${fullpath}`, window.location.origin);
 
   console.log("Fetching local Thing Model from URL:", url.toString());
   const res = await fetch(url.toString());
