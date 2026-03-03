@@ -32,8 +32,8 @@ jobs:
         - name: Fetch UI using script
           shell: bash
           run: |
-            chmod +x ./ci-cd/fetchUI.sh
-            ./ci-cd/fetchUI.sh "${{ env.TMC_UI_REPO }}"
+            chmod +x ./ci-cd/fetchUi.sh
+            ./ci-cd/fetchUi.sh "${{ env.TMC_UI_REPO }}"
         - name: Upload catalog public files
           uses: actions/upload-artifact@v4
           with:
@@ -42,6 +42,7 @@ jobs:
             include-hidden-files: true
             if-no-files-found: error  
   fetch-catalog:
+    needs: fetch-ui
     runs-on: ubuntu-latest
     steps:
         - name: Checkout repository
