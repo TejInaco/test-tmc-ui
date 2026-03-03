@@ -19,7 +19,7 @@ concurrency:
 
 env:
   SERVER_AVAILABLE: false 
-  CATALOG_URL: "https://github.com/TejInaco/example-catalog.git"
+  CATALOG_URL: "https://github.com/wot-oss/example-catalog.git"
   TMC_UI_REPO: "https://github.com/TejInaco/example-tmc-ui.git"
 
 jobs:
@@ -55,8 +55,9 @@ jobs:
           shell: bash
           run: |
             chmod +x ./ci-cd/fetchCatalog.sh
-            ./ci-cd/fetchCatalog.sh "${{ env.CATALOG_URL }}"
-            ls -la main/
+            ./ci-cd/fetchCatalog.sh "${{ env.CATALOG_URL }}" ./public
+            ls -la
+            ls -la ./public
         - name: Upload catalog public files
           uses: actions/upload-artifact@v4
           with:

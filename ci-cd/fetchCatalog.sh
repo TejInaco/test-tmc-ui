@@ -3,12 +3,12 @@
 set -euo pipefail
 
 readonly REQUIRED_FILES="tmnames.txt,mpns.txt,manufacturers.txt,protocols.txt,tm-catalog.toc.json"
-readonly PUBLIC_CATALOG_DIR="public"
+
 
 show_help() {
 	cat <<EOF
 
-Usage: $(basename "$0") <url>
+Usage: $(basename "$0") <url> <destination>
 
 Run this command with a  repository URL to fetch required files from the catalog repository.
 
@@ -16,43 +16,49 @@ Flags:
   -h|--help   Show this help message
   
 Example:
-  ./$(basename "$0") https://gitlab.com/catalog-example.git
-  ./$(basename "$0") https://github.com/wot-oss/example-catalog.git
-
-
+  ./$(basename "$0") https://gitlab.com/catalog-example.git public
+  ./$(basename "$0") https://github.com/wot-oss/example-catalog.git main/public	
 EOF
 	exit 0
 }
+fail() {
+    echo "ERROR: $1"
+    exit "${2:-1}"
+}
 
-download_catalog_to_public() {
-	local target_dir="${1:-$PUBLIC_CATALOG_DIR}"
-	local tmp_dir
-	local clone_dir
+check_dependencies() {
+    command -v git >/dev/null 2>&1 || fail "Missing dependency: git."
+}
 
-	echo ""
-	echo "INFO: Start downloading from: $CATALOG_CLONE_URL"
-	echo ""
+download_catalog() {
+    local clone_url="$1"
+    local target_dir="$2"
 
-	tmp_dir="$(mktemp -d)"
-	clone_dir="${tmp_dir}/catalog-repo"
+    echo ""
+    echo "INFO: Start downloading from: $clone_url"
+    echo ""
 
-	git clone --depth 1 "$CATALOG_CLONE_URL" "$clone_dir"
-	rm -rf "${clone_dir}/.git"
-	rm -rf "${clone_dir}/.gitignore"
-	rm -rf "${clone_dir}/.github"
-	rm -rf "${clone_dir}/README.md"	
+    [[ -n "$target_dir" ]] || fail "Destination folder cannot be empty."
+    [[ "$target_dir" != "/" ]] || fail "Destination folder '/' is not allowed."
 
-	mkdir -p "$target_dir"
-	cp -a "${clone_dir}/." "$target_dir/"
+    if [ -e "$target_dir" ]; then
+        rm -rf "$target_dir"
+    fi
 
-	rm -rf "$tmp_dir"
-	echo ""
-	echo "INFO: Catalog downloaded to: $target_dir"
-	echo ""
+    git clone --depth 1 "$clone_url" "$target_dir"
+
+    rm -rf "${target_dir}/.git"
+    rm -rf "${target_dir}/.gitignore"
+    rm -rf "${target_dir}/.github"
+    rm -rf "${target_dir}/README.md"
+
+    echo ""
+    echo "INFO: Catalog downloaded to: $target_dir"
+    echo ""
 }
 
 validate_required_files() {
-	local target_dir="${1:-$PUBLIC_CATALOG_DIR}"
+	local target_dir="${1}"
 	local missing=0
 	local required_files
 	local file
@@ -92,43 +98,46 @@ validate_required_files() {
 	echo "INFO: Required files validation passed."
 }
 
-validation() {
-	local input_url="${1:-}"
+validate_inputs() {
+    local input_url="$1"
+    local destination="$2"
 
-	if [ -z "$input_url" ]; then
-		echo " "
-		echo "ERROR: Missing repository URL argument."
-		echo " "
-		exit 1
-	fi
+    if [ -z "$input_url" ]; then
+        fail "Missing repository URL argument."
+    fi
 
-	if ! [[ "$input_url" =~ ^https?:// ]]; then
-		echo " "
-		echo "ERROR: URL must start with http:// or https://"
-		echo " "
-		exit 1
-	fi
+    if [ -z "$destination" ]; then
+        fail "Missing destination folder argument."
+    fi
 
-	if ! echo "$input_url" | grep -qE '^https?://(www\.)?(github\.com|gitlab\.com)/'; then
-		echo " "
-		echo "ERROR: URL must be from github.com or gitlab.com"
-		echo " "
-		exit 1
-	fi
+    if ! [[ "$input_url" =~ ^https?:// ]]; then
+        fail "URL must start with http:// or https://"
+    fi
+
+    if ! echo "$input_url" | grep -qE '^https?://(www\.)?(github\.com|gitlab\.com)/'; then
+        fail "URL must be from github.com or gitlab.com"
+    fi
 }
 
 if [ $# -eq 0 ]; then
 	show_help
 fi
 
-case "$1" in
+case "${1:-}" in
 --help | -h)
-	show_help
-	;;
+    show_help
+    ;;
 *)
-	validation "$1"
-	CATALOG_CLONE_URL="$1"
-	download_catalog_to_public "$PUBLIC_CATALOG_DIR"
-	validate_required_files "$PUBLIC_CATALOG_DIR"
-	;;
+    if [ $# -ne 2 ]; then
+        show_help
+    fi
+
+    CATALOG_CLONE_URL="$1"
+    DESTINATION_DIR="$2"
+
+    check_dependencies
+    validate_inputs "$CATALOG_CLONE_URL" "$DESTINATION_DIR"
+    download_catalog "$CATALOG_CLONE_URL" "$DESTINATION_DIR"
+    validate_required_files "$DESTINATION_DIR"
+    ;;
 esac
