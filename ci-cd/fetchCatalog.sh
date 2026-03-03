@@ -38,6 +38,9 @@ download_catalog_to_public() {
 
 	git clone --depth 1 "$CATALOG_CLONE_URL" "$clone_dir"
 	rm -rf "${clone_dir}/.git"
+	rm -rf "${clone_dir}/.gitignore"
+	rm -rf "${clone_dir}/.github"
+	rm -rf "${clone_dir}/README.md"	
 
 	mkdir -p "$target_dir"
 	cp -a "${clone_dir}/." "$target_dir/"
