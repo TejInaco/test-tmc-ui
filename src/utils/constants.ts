@@ -35,7 +35,7 @@ export const REPOSITORY_CATALOG_DEFAULT_FOLDER = ".tmc/";
 
 export const AUTHORS_FILENAME = "tmauthors.txt";
 
-export const PROTOCOLS_FILENAME = "tmprotocols.txt";
+export const PROTOCOLS_FILENAME = "protocols.txt";
 
 export const MANUFACTURERS_FILENAME = "tmmanufacturers.txt";
 
