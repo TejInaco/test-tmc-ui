@@ -82,7 +82,7 @@ validate_required_files() {
 		if [[ "$file" == */* ]]; then
 			candidate_path="$file"
 		else
-			candidate_path="$target_dir/.tmc/$file"
+			candidate_path="${target_dir}/.tmc/$file"
 		fi
 
 		if [ ! -f "${target_dir}/${candidate_path}" ]; then
