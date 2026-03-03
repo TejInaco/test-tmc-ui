@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
       __API_BASE__: JSON.stringify(API_BASE),
       __CATALOG_URL__: JSON.stringify(""),
       __DEBUG__: true,
-      __SERVER_AVAILABLE__: true,
+      __SERVER_AVAILABLE__: false,
     },
   };
 });

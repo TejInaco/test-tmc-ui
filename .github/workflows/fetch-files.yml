@@ -18,96 +18,34 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  SERVER_AVAILABLE: false
-  TMC_UI: wot-oss/tmc-ui  
-  CATALOG_URL: "TejInaco/example-catalog"
-  REQUIRED_FILES: tmnames.txt,tmauthors.txt,tmprotocols.txt,tmmanufacturers.txt
+  SERVER_AVAILABLE: false 
+  CATALOG_URL: "https://github.com/TejInaco/example-catalog.git"
 
 jobs:
   fetch-catalog:
     runs-on: ubuntu-latest
-    outputs:
-      catalog_enabled: ${{ steps.catalog-gate.outputs.catalog_enabled }}
     steps:
-      - name: Catalog Enabled Gate
-        id: catalog-gate
-        shell: bash
-        run: |
-          if [ -n "${CATALOG_URL:-}" ]; then
-            echo "catalog_enabled=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "catalog_enabled=false" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Checkout external repository
-        if: ${{ steps.catalog-gate.outputs.catalog_enabled == 'true' }}
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ env.CATALOG_URL }}
-          path: temp-repo
-          fetch-depth: 1
+        - name: Checkout repository
+          uses: actions/checkout@v4
 
-      - name: Verify required files exist
-        if: ${{ steps.catalog-gate.outputs.catalog_enabled == 'true' }}
-        run: |
-          if [ -z "${REQUIRED_FILES:-}" ]; then
-            echo "Error: REQUIRED_FILES env var is empty"
-            exit 1
-          fi
-
-          if [ ! -d "temp-repo/.tmc" ]; then
-            echo "Error: Required folder .tmc/ not found in the external repository"
-            exit 1
-          fi
-
-          missing=0
-          required_files="${REQUIRED_FILES//,/ }"
-
-          echo "Validating required files in external repository checkout:"
-          echo "$required_files" | tr ' ' '\n' | sed '/^$/d' | sed 's|^|- |'
-
-          for file in $required_files; do
-            file="$(echo "$file" | xargs)"
-            [ -z "$file" ] && continue
-
-            if [[ "$file" == */* ]]; then
-              candidate_path="$file"
-            else
-              candidate_path=".tmc/$file"
-            fi
-
-            if [ ! -f "temp-repo/$candidate_path" ]; then
-              echo "Error: Required file not found: $candidate_path"
-              missing=1
-            fi
-          done
-
-          if [ "$missing" -ne 0 ]; then
-            exit 1
-          fi
-
-          echo "Requirement satisfied: all required files are present"
-
-      - name: Fetch files from external repository
-        if: ${{ steps.catalog-gate.outputs.catalog_enabled == 'true' }}
-        run: |
-          rsync -a temp-repo/ public/ --exclude '.git'
-          rm -rf temp-repo
-          ls -la public/
-          ls -la public/.tmc/
-
-      - name: Upload catalog public files
-        if: ${{ steps.catalog-gate.outputs.catalog_enabled == 'true' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: catalog-public
-          path: public
-          include-hidden-files: true
-          if-no-files-found: error
+        - name: Fetch catalog using script
+          shell: bash
+          run: |
+            chmod +x ./ci-cd/fetchCatalog.sh
+            ./ci-cd/fetchCatalog.sh "${{ env.CATALOG_URL }}"
+            ls -la public/
+            ls -la public/.tmc/
+        - name: Upload catalog public files
+          uses: actions/upload-artifact@v4
+          with:
+            name: catalog-public
+            path: public
+            include-hidden-files: true
+            if-no-files-found: error
 
 
   configuration:
     needs: fetch-catalog 
-    if: ${{ always() }}
     runs-on: ubuntu-latest
 
     steps:
@@ -115,7 +53,6 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download catalog public files
-        if: ${{ needs.fetch-catalog.outputs.catalog_enabled == 'true' }}
         uses: actions/download-artifact@v4
         with:
           name: catalog-public

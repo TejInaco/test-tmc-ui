@@ -125,8 +125,7 @@ const Details = () => {
       const tes = import.meta.env.BASE_URL;
 
       const url = `${window.location.origin}${tes}${item.versions?.[0].links.content}`;
-      console.log(import.meta.env.BASE_URL);
-      console.log("Opening URL:", url);
+
       window.open(url, "_blank", "noopener,noreferrer");
       return;
     }
