@@ -31,9 +31,8 @@ jobs:
 
         - name: Fetch UI using script
           shell: bash
-          run: |
-            chmod +x ./ci-cd/fetchUi.sh
-            ./ci-cd/fetchUi.sh "${{ env.TMC_UI_REPO }}"
+          run: | 
+            ls -la
         - name: Upload catalog public files
           uses: actions/upload-artifact@v4
           with:
