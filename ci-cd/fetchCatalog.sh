@@ -58,7 +58,7 @@ download_catalog() {
 }
 
 validate_required_files() {
-	local target_dir="$2"
+	local target_dir="$1"
 	local missing=0
 	local required_files
 	local file
@@ -82,7 +82,7 @@ validate_required_files() {
 		if [[ "$file" == */* ]]; then
 			candidate_path="$file"
 		else
-			candidate_path="${target_dir}/.tmc/$file"
+			candidate_path=".tmc/$file"
 		fi
 
 		if [ ! -f "${target_dir}/${candidate_path}" ]; then
