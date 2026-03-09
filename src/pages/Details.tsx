@@ -176,7 +176,7 @@ const Details = () => {
             <div className="mt-0 flex-1 px-4 text-textGray sm:px-0">
               <FieldCard
                 label="Name"
-                value={(item as ItemExtended).name ?? item.tmName}
+                value={(item as ItemExtended).name ?? item.tmName ?? "—"}
               />
               <FieldCard
                 label="Author"
