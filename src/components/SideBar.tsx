@@ -32,15 +32,26 @@ const SideBar: React.FC<SideBarProps> = ({
 }) => {
   const [showScrollTop, setShowScrollTop] = useState(false);
 
-  const filters = useMemo<Filters>(
-    () => [
+  const filters = useMemo<Filters>(() => {
+    const baseFilters: Filters = [
       { id: "protocol", name: "Protocol", options: protocolsState },
       { id: "manufacturer", name: "Manufacturer", options: manufacturersState },
       { id: "author", name: "Author", options: authorsState },
       { id: "repository", name: "Repository", options: repositoriesState },
-    ],
-    [protocolsState, manufacturersState, authorsState, repositoriesState]
-  );
+    ];
+
+    if (deploymentType !== "SERVER_AVAILABLE") {
+      return baseFilters.filter((filter) => filter.id !== "repository");
+    }
+
+    return baseFilters;
+  }, [
+    protocolsState,
+    manufacturersState,
+    authorsState,
+    repositoriesState,
+    deploymentType,
+  ]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -93,7 +104,7 @@ const SideBar: React.FC<SideBarProps> = ({
                 <DisclosurePanel className="bg-bgBodyPrimary pt-6">
                   {section.id === "protocol" &&
                   deploymentType !== "SERVER_AVAILABLE" ? (
-                    <p className="text-textSecondary mb-4 text-sm">
+                    <p className="mb-4 text-sm text-textValue">
                       Protocol filtering is only available when connected to a
                       backend server.
                     </p>

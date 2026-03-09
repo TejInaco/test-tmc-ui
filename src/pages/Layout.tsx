@@ -130,7 +130,8 @@ const Layout: React.FC<{
           );
         const matchesAuthor =
           checkedAuthors.length === 0 ||
-          checkedAuthors.includes(item["schema:author"]?.["schema:name"]);
+          //checkedAuthors.includes(item["schema:author"]?.["schema:name"]); // case api
+          checkedAuthors.some((author) => item.tmName.includes(author)); // case local
 
         return matchesCatalog && matchesManufacturer && matchesAuthor;
       });
