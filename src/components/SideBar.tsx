@@ -68,23 +68,23 @@ const SideBar: React.FC<SideBarProps> = ({
 
   return (
     <div className="w-full">
-      <div className="flex items-baseline justify-between border-b border-gray-200 pb-6">
+      <div className="flex items-baseline justify-between border-b border-gray-200 pb-5">
         <h1 className="text-3xl font-bold tracking-tight text-textValue">
           Filters
         </h1>
       </div>
 
-      <section aria-labelledby="products-heading" className="pb-24 pt-6">
+      <section aria-labelledby="products-heading" className="pb-15 pt-6">
         <div className="flex flex-col gap-x-8 gap-y-10">
           {/* Filters */}
-          <form className="hidden lg:block">
+          <form className="lg:block">
             {filters.map((section) => (
               <Disclosure
                 key={section.id}
                 as="div"
                 className="border-b border-gray-200 py-6"
               >
-                <h3 className="-my-3 flow-root">
+                <h3 className="flow-root">
                   <DisclosureButton className="group flex w-full items-center justify-between bg-bgBodyPrimary py-3 text-sm">
                     <span className="font-medium text-textLabel">
                       {section.name}
