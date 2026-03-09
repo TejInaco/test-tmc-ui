@@ -67,7 +67,7 @@ const GridList: React.FC<{
           {items.map((itemTM, i) => {
             const key = buildItemKey(itemTM, i);
             const imageSrc = buildItemImageSrc(
-              itemTM.tmName,
+              itemTM.tmName ?? "",
               deploymentType,
               itemTM.attachments
             );
@@ -84,7 +84,7 @@ const GridList: React.FC<{
                     deploymentType: deploymentType,
                   }}
                 >
-                  <div className="flex w-full items-center justify-between space-x-6 p-6">
+                  <div className="flex w-full flex-col items-start space-y-4 p-6 sm:flex-row sm:items-center sm:justify-between sm:space-x-6 sm:space-y-0">
                     <div className="flex-1 truncate text-textValue">
                       <div className="flex items-center space-x-3">
                         <h3 className="text-sm font-medium">{itemTM.tmName}</h3>
@@ -144,7 +144,7 @@ const GridList: React.FC<{
           {items.map((itemTM, i) => {
             const key = buildItemKey(itemTM, i);
             const imageSrc = buildItemImageSrc(
-              itemTM.name ?? itemTM.tmName,
+              itemTM.name ?? itemTM.tmName ?? "",
               deploymentType,
               itemTM.attachments
             );
@@ -162,7 +162,7 @@ const GridList: React.FC<{
                     deploymentType: deploymentType,
                   }}
                 >
-                  <div className="flex w-full items-center justify-between space-x-6 p-6">
+                  <div className="flex w-full flex-col items-start space-y-4 p-6 sm:flex-row sm:items-center sm:justify-between sm:space-x-6 sm:space-y-0">
                     <div className="flex-1 truncate text-textValue">
                       <div className="flex items-center space-x-3">
                         <h3 className="text-sm font-medium">
