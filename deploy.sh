@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -euo pipefail
+set -eu pipefail
 
 if [ -f ".env" ]; then
   set -a
@@ -64,4 +64,4 @@ log_info "Validating required catalog files..."
 sh ci-cd/validateRequiredFiles.sh "public"
 
 log_info "Editing configuration file:  vite.config.mjs"
-bash ci-cd/editConfig.sh "$SERVER_AVAILABLE"
+sh ci-cd/editConfig.sh "$SERVER_AVAILABLE"
