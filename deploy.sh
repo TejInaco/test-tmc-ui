@@ -53,8 +53,8 @@ else
 
   sh ci-cd/fetchRepository.sh "$CATALOG_REPO_URL" "$TEMP_APP_DIR_CATALOG"
 
-  log_info "Copying .tmc folder to public directory..."
-  cp -r "$TEMP_APP_DIR_CATALOG"/ public/
+  log_info "Copying catalog contents to public directory..."
+  cp -r "$TEMP_APP_DIR_CATALOG"/. public/
 
   log_info "Cleaning up temporary catalog folder..."
   rm -rf "$TEMP_APP_DIR_CATALOG"
