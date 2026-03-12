@@ -70,14 +70,6 @@ validate_inputs() {
   if [ -z "$destination" ]; then
     log_error "Missing destination folder argument."
   fi
-
-  if ! [[ "$input_url" =~ ^https?:// ]]; then
-    log_error "URL must start with http:// or https://"
-  fi
-
-  if ! echo "$input_url" | grep -qE '^https?://(www\.)?(github\.com|gitlab\.com)/'; then
-    log_error "URL must be from github.com or gitlab.com"
-  fi
 }
 
 if [ $# -eq 0 ]; then
