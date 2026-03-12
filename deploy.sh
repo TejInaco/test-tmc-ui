@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -eu pipefail
-
 if [ -f ".env" ]; then
   set -a
   . ./.env

@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -eu pipefail
-
 show_help() {
   cat <<EOF
 Usage: $(basename "$0") <url> <destination>
@@ -91,13 +89,9 @@ case "${1:-}" in
   show_help
   ;;
 *)
-  log_info "DEBUG: Received $# arguments"
-  log_info "DEBUG: Arg 1: '$1'"
-  log_info "DEBUG: Arg 2: '${2:-}'"
-  
   if [ $# -ne 2 ]; then
-    log_error "Expected 2 arguments, got $#"
     show_help
+
   fi
 
   CATALOG_CLONE_URL="$1"

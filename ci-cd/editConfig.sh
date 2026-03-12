@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -eu pipefail
-
 log_info() {
   echo "[INFO] $*"
 }
