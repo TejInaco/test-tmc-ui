@@ -48,13 +48,20 @@ jobs:
           name: configured-workspace
           path: .
       
-          
+
       - name: Set config - base path
         run: |
           sed -i "s|return {|return {\n    base: '/${{ github.event.repository.name }}/',|" vite.config.mjs
           echo "=== vite.config.mjs after modification ==="
           cat vite.config.mjs
-      
+      - name: Set config - catalog URL
+        run: |
+          CATALOG_URL="${{ github.repository }}"
+          echo "Setting __CATALOG_URL__ to: $CATALOG_URL"
+          sed -i -E "s|__CATALOG_URL__:[[:space:]]*JSON.stringify(.*)|__CATALOG_URL__: JSON.stringify(\"$CATALOG_URL\"),|g" vite.config.mjs
+          echo "=== vite.config.mjs after __CATALOG_URL__ update ==="
+          cat vite.config.mjs
+                
       - name: Set tool - yarn
         uses: actions/setup-node@v4
         with:
