@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 log_info() {
   echo "[INFO] $*"
@@ -25,7 +25,7 @@ EOF
 }
 
 validate_boolean() {
-  local value="$1"
+  value="$1"
   if [ "$value" != "true" ] && [ "$value" != "false" ]; then
     log_error "Invalid value: $value. Expected true or false."
     exit 1
@@ -52,6 +52,19 @@ if [ ! -f "vite.config.mjs" ]; then
 fi
 
 echo "Setting SERVER_AVAILABLE to: $SERVER_AVAILABLE"
-sed -i -E "s/(SERVER_AVAILABLE:[[:space:]]*)(true|false)/\1$SERVER_AVAILABLE/g" vite.config.mjs
+
+tmp_file="${TMPDIR:-/tmp}/vite.config.mjs.$$"
+if ! sed -E "s/(SERVER_AVAILABLE:[[:space:]]*)(true|false)/\\1$SERVER_AVAILABLE/g" vite.config.mjs >"$tmp_file"; then
+  rm -f "$tmp_file"
+  log_error "Failed to update vite.config.mjs"
+  exit 1
+fi
+
+if ! mv "$tmp_file" vite.config.mjs; then
+  rm -f "$tmp_file"
+  log_error "Failed to replace vite.config.mjs"
+  exit 1
+fi
+
 echo "=== vite.config.mjs after SERVER_AVAILABLE update ==="
 cat vite.config.mjs

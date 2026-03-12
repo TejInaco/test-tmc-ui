@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 show_help() {
   cat <<EOF
@@ -34,21 +34,23 @@ check_dependencies() {
 }
 
 download_catalog() {
-  local clone_url="$1"
-  local target_dir="$2"
+  clone_url="$1"
+  target_dir="$2"
 
   log_info "Start downloading from: $clone_url"
 
-  [[ -n "$target_dir" ]] || log_error "Destination folder cannot be empty."
-  [[ "$target_dir" != "/" ]] || log_error "Destination folder '/' is not allowed."
-  [[ "$target_dir" != "." ]] || log_error "Destination folder '.' is not allowed."
-  [[ "$target_dir" != ".." ]] || log_error "Destination folder '..' is not allowed."
+  [ -n "$target_dir" ] || log_error "Destination folder cannot be empty."
+  [ "$target_dir" != "/" ] || log_error "Destination folder '/' is not allowed."
+  [ "$target_dir" != "." ] || log_error "Destination folder '.' is not allowed."
+  [ "$target_dir" != ".." ] || log_error "Destination folder '..' is not allowed."
 
   if [ -e "$target_dir" ]; then
     rm -rf "$target_dir"
   fi
 
-  git clone --depth 1 "$clone_url" "$target_dir"
+  if ! git clone --depth 1 "$clone_url" "$target_dir"; then
+    log_error "Failed to clone repository: $clone_url"
+  fi
 
   rm -rf "${target_dir}/.git"
   rm -rf "${target_dir}/.gitignore"
@@ -60,8 +62,8 @@ download_catalog() {
 }
 
 validate_inputs() {
-  local input_url="$1"
-  local destination="$2"
+  input_url="$1"
+  destination="$2"
 
   if [ -z "$input_url" ]; then
     log_error "Missing repository URL argument."

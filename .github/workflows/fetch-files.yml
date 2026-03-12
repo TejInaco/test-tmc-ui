@@ -25,7 +25,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Run deploy script
-        run: bash deploy.sh
+        run: sh deploy.sh
 
       - name: Upload configured workspace
         uses: actions/upload-artifact@v4

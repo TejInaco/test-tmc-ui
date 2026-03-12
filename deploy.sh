@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 if [ -f ".env" ]; then
   set -a
@@ -27,7 +27,7 @@ if [ ! -f "package.json" ] || [ ! -d "src" ]; then
   log_info "Missing package.json or src directory. Running fetchRepository script..."
   log_info "Fetching repository from GitHub..."
   TEMP_APP_DIR="temp_app_repo"
-  bash ci-cd/fetchRepository.sh "$APP_REPO_URL" "$TEMP_APP_DIR"
+  sh ci-cd/fetchRepository.sh "$APP_REPO_URL" "$TEMP_APP_DIR"
   log_info "Copying application files into working directory..."
   cp -R "$TEMP_APP_DIR"/. ./
   log_info "Cleaning up temporary application folder..."
@@ -51,7 +51,7 @@ else
   log_info "$CATALOG_REPO_URL"
   log_info "$TEMP_APP_DIR_CATALOG"
 
-  bash ci-cd/fetchRepository.sh "$CATALOG_REPO_URL" "$TEMP_APP_DIR_CATALOG"
+  sh ci-cd/fetchRepository.sh "$CATALOG_REPO_URL" "$TEMP_APP_DIR_CATALOG"
 
   log_info "Copying .tmc folder to public directory..."
   cp -r "$TEMP_APP_DIR_CATALOG"/.tmc public/
@@ -61,7 +61,7 @@ else
 fi
 
 log_info "Validating required catalog files..."
-bash ci-cd/validateRequiredFiles.sh "public"
+sh ci-cd/validateRequiredFiles.sh "public"
 
 log_info "Editing configuration file:  vite.config.mjs"
-bash ci-cd/editConfig.sh "$SERVER_AVAILABLE"
+sh ci-cd/editConfig.sh "$SERVER_AVAILABLE"

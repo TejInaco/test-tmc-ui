@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 readonly required_files="tmnames.txt,mpns.txt,manufacturers.txt,protocols.txt,tm-catalog.toc.json"
 
@@ -27,10 +27,8 @@ log_error() {
 }
 
 validate_required_files() {
-  local target_dir="$1"
-  local missing=0
-  local file
-  local candidate_path
+  target_dir="$1"
+  missing=0
 
   log_info "Start required files validation"
 
@@ -39,15 +37,21 @@ validate_required_files() {
     exit 1
   fi
 
-  for file in ${required_files//,/ }; do
+  # Convert comma-separated list to space-separated using tr
+  files_list=$(echo "$required_files" | tr ',' ' ')
+
+  for file in $files_list; do
     file="$(echo "$file" | xargs)"
     [ -z "$file" ] && continue
 
-    if [[ "$file" == */* ]]; then
+    case "$file" in
+    */*)
       candidate_path="$file"
-    else
+      ;;
+    *)
       candidate_path=".tmc/$file"
-    fi
+      ;;
+    esac
 
     if [ ! -f "${target_dir}/${candidate_path}" ]; then
       log_error "Required file not found: $candidate_path"
@@ -62,11 +66,11 @@ validate_required_files() {
   log_info "Required files validation passed."
 }
 
-if [[ $# -eq 0 ]]; then
+if [ $# -eq 0 ]; then
   show_help
 fi
 
-if [[ $# -ne 1 ]]; then
+if [ $# -ne 1 ]; then
   log_error "Invalid arguments."
   show_help
 fi
