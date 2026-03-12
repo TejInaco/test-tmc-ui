@@ -67,7 +67,7 @@ const GridList: React.FC<{
           {items.map((itemTM, i) => {
             const key = buildItemKey(itemTM, i);
             const imageSrc = buildItemImageSrc(
-              itemTM.tmName ?? "",
+              itemTM.tmName,
               deploymentType,
               itemTM.attachments
             );
@@ -144,7 +144,7 @@ const GridList: React.FC<{
           {items.map((itemTM, i) => {
             const key = buildItemKey(itemTM, i);
             const imageSrc = buildItemImageSrc(
-              itemTM.name ?? itemTM.tmName ?? "",
+              itemTM.name ?? itemTM.tmName,
               deploymentType,
               itemTM.attachments
             );

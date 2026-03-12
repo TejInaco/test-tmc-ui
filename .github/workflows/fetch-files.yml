@@ -17,90 +17,15 @@ concurrency:
   group: "pages"
   cancel-in-progress: false
 
-env:
-  SERVER_AVAILABLE: false 
-  CATALOG_URL: "https://github.com/wot-oss/example-catalog.git"
-  TMC_UI_REPO: "https://github.com/TejInaco/example-tmc-ui.git"
-
 jobs:
-  fetch-ui:
-    runs-on: ubuntu-latest
-    steps:
-        - name: Checkout repository
-          uses: actions/checkout@v4
-
-        - name: Fetch UI using script
-          shell: bash
-          run: | 
-            ls -la
-        - name: Upload catalog public files
-          uses: actions/upload-artifact@v4
-          with:
-            name: deploy
-            path: .
-            include-hidden-files: true
-            if-no-files-found: error  
-  fetch-catalog:
-    needs: fetch-ui
-    runs-on: ubuntu-latest
-    steps:
-        - name: Checkout repository
-          uses: actions/checkout@v4
-        - name: Download UI public files
-          uses: actions/download-artifact@v4
-          with:
-            name: deploy
-            path: main
-        - name: Fetch catalog using script
-          shell: bash
-          run: |
-            chmod +x ./ci-cd/fetchCatalog.sh
-            ./ci-cd/fetchCatalog.sh "${{ env.CATALOG_URL }}" ./public
-            ls -la
-            ls -la ./public
-        - name: Upload catalog public files
-          uses: actions/upload-artifact@v4
-          with:
-            name: deploy-ui-catalog
-            path: main
-            include-hidden-files: true
-            if-no-files-found: error
-
-    
   configuration:
-    needs: fetch-catalog 
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Download catalog public files
-        uses: actions/download-artifact@v4
-        with:
-          name: catalog-public
-          path: public
-
-      - name: Set config - base path
-        run: |
-          sed -i "s|return {|return {\n    base: '/${{ github.event.repository.name }}/',|" vite.config.mjs
-          echo "=== vite.config.mjs after modification ==="
-          cat vite.config.mjs
-
-      - name: Set config step 1 - CATALOG_URL to __CATALOG_URL__  
-        run: |
-          echo "Setting __CATALOG_URL__ to: $CATALOG_URL"
-          sed -i -E "s|__CATALOG_URL__:[[:space:]]*JSON.stringify(.*)|__CATALOG_URL__: JSON.stringify(\"$CATALOG_URL\"),|g" vite.config.mjs
-          echo "=== vite.config.mjs after __CATALOG_URL__ update ==="
-          cat vite.config.mjs
-
-      - name: Set config step 2 -  SERVER_AVAILABLE to __SERVER_AVAILABLE__
-        shell: bash
-        run: |
-          echo "Setting __SERVER_AVAILABLE__ to: $SERVER_AVAILABLE"
-          sed -i -E "s/(__SERVER_AVAILABLE__:[[:space:]]*)(true|false)/\1$SERVER_AVAILABLE/g" vite.config.mjs
-          echo "=== vite.config.mjs after __SERVER_AVAILABLE__ update ==="
-          cat vite.config.mjs
+      - name: Run deploy script
+        run: bash deploy.sh
 
       - name: Upload configured workspace
         uses: actions/upload-artifact@v4
