@@ -29,7 +29,6 @@ if [ ! -f "package.json" ] || [ ! -d "src" ]; then
   log_info "Missing package.json or src directory. Running fetchRepository script..."
   log_info "Fetching repository from GitHub..."
   TEMP_APP_DIR="temp_app_repo"
-  rm -rf "$TEMP_APP_DIR"
   sh ci-cd/fetchRepository.sh "$APP_REPO_URL" "$TEMP_APP_DIR"
   log_info "Copying application files into working directory..."
   cp -R "$TEMP_APP_DIR"/. ./
