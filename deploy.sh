@@ -50,6 +50,9 @@ if [ -d "public/.tmc" ]; then
 else
   log_info "Public folder found. Downloading repository catalog to temporary location..."
   TEMP_APP_DIR_CATALOG="temp_catalog"
+  log_info "$CATALOG_REPO_URL"
+  log_info "$TEMP_APP_DIR_CATALOG"
+
   sh ci-cd/fetchRepository.sh "$CATALOG_REPO_URL" "$TEMP_APP_DIR_CATALOG"
 
   log_info "Copying .tmc folder to public directory..."
