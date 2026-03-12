@@ -3,9 +3,9 @@
 set -euo pipefail
 
 if [ -f ".env" ]; then
-	set -a
-	. ./.env
-	set +a
+  set -a
+  . ./.env
+  set +a
 fi
 
 : "${APP_REPO_URL:=https://github.com/TejInaco/test-tmc-ui.git}"
@@ -13,55 +13,55 @@ fi
 : "${SERVER_AVAILABLE:=false}"
 
 log_info() {
-	echo "[INFO] $*"
+  echo "[INFO] $*"
 }
 
 log_warn() {
-	echo "[WARN] $*" >&2
+  echo "[WARN] $*" >&2
 }
 
 log_error() {
-	echo "[ERROR] $*" >&2
+  echo "[ERROR] $*" >&2
 }
 
 # Verification step: check if package.json and src directory exist
 if [ ! -f "package.json" ] || [ ! -d "src" ]; then
-	log_info "Missing package.json or src directory. Running fetchRepository script..."
-	log_info "Fetching repository from GitHub..."
-	TEMP_APP_DIR="temp_app_repo"
-	rm -rf "$TEMP_APP_DIR"
-	sh ci-cd_/fetchRepository.sh "$APP_REPO_URL" "$TEMP_APP_DIR"
-	log_info "Copying application files into working directory..."
-	cp -R "$TEMP_APP_DIR"/. ./
-	log_info "Cleaning up temporary application folder..."
-	rm -rf "$TEMP_APP_DIR"
+  log_info "Missing package.json or src directory. Running fetchRepository script..."
+  log_info "Fetching repository from GitHub..."
+  TEMP_APP_DIR="temp_app_repo"
+  rm -rf "$TEMP_APP_DIR"
+  sh ci-cd/fetchRepository.sh "$APP_REPO_URL" "$TEMP_APP_DIR"
+  log_info "Copying application files into working directory..."
+  cp -R "$TEMP_APP_DIR"/. ./
+  log_info "Cleaning up temporary application folder..."
+  rm -rf "$TEMP_APP_DIR"
 else
-	log_info "package.json and src directory found. Skipping repository fetch."
+  log_info "package.json and src directory found. Skipping repository fetch."
 fi
 
 # Check if public folder exists
 if [ ! -d "public" ]; then
-	log_error "Public folder not found. Cannot proceed with catalog download."
-	exit 1
+  log_error "Public folder not found. Cannot proceed with catalog download."
+  exit 1
 fi
 
 # Check if .tmc folder already exists inside public
 if [ -d "public/.tmc" ]; then
-	log_info "Catalog already exists (public/.tmc found). Skipping catalog download."
+  log_info "Catalog already exists (public/.tmc found). Skipping catalog download."
 else
-	log_info "Public folder found. Downloading repository catalog to temporary location..."
-	TEMP_APP_DIR_CATALOG="temp_catalog"
-	sh ci-cd_/fetchRepository.sh "$CATALOG_REPO_URL" "$TEMP_APP_DIR_CATALOG"
+  log_info "Public folder found. Downloading repository catalog to temporary location..."
+  TEMP_APP_DIR_CATALOG="temp_catalog"
+  sh ci-cd/fetchRepository.sh "$CATALOG_REPO_URL" "$TEMP_APP_DIR_CATALOG"
 
-	log_info "Copying .tmc folder to public directory..."
-	cp -r "$TEMP_APP_DIR_CATALOG"/.tmc public/
+  log_info "Copying .tmc folder to public directory..."
+  cp -r "$TEMP_APP_DIR_CATALOG"/.tmc public/
 
-	log_info "Cleaning up temporary catalog folder..."
-	rm -rf "$TEMP_APP_DIR_CATALOG"
+  log_info "Cleaning up temporary catalog folder..."
+  rm -rf "$TEMP_APP_DIR_CATALOG"
 fi
 
 log_info "Validating required catalog files..."
-sh ci-cd_/validateRequiredFiles.sh "public"
+sh ci-cd/validateRequiredFiles.sh "public"
 
 log_info "Editing configuration file:  vite.config.mjs"
-bash ci-cd_/editConfig.sh "$SERVER_AVAILABLE"
+bash ci-cd/editConfig.sh "$SERVER_AVAILABLE"
