@@ -48,6 +48,13 @@ jobs:
           name: configured-workspace
           path: .
       
+          
+      - name: Set config - base path
+        run: |
+          sed -i "s|return {|return {\n    base: '/${{ github.event.repository.name }}/',|" vite.config.mjs
+          echo "=== vite.config.mjs after modification ==="
+          cat vite.config.mjs
+      
       - name: Set tool - yarn
         uses: actions/setup-node@v4
         with:
