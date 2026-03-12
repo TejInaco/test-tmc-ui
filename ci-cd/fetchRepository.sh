@@ -4,7 +4,6 @@ set -eu pipefail
 
 show_help() {
   cat <<EOF
-
 Usage: $(basename "$0") <url> <destination>
 
 Run this command with a  repository URL to fetch required files from the catalog repository.
@@ -75,11 +74,11 @@ validate_inputs() {
   fi
 
   if ! [[ "$input_url" =~ ^https?:// ]]; then
-    fail "URL must start with http:// or https://"
+    log_error "URL must start with http:// or https://"
   fi
 
   if ! echo "$input_url" | grep -qE '^https?://(www\.)?(github\.com|gitlab\.com)/'; then
-    fail "URL must be from github.com or gitlab.com"
+    log_error "URL must be from github.com or gitlab.com"
   fi
 }
 
@@ -92,7 +91,12 @@ case "${1:-}" in
   show_help
   ;;
 *)
+  log_info "DEBUG: Received $# arguments"
+  log_info "DEBUG: Arg 1: '$1'"
+  log_info "DEBUG: Arg 2: '${2:-}'"
+  
   if [ $# -ne 2 ]; then
+    log_error "Expected 2 arguments, got $#"
     show_help
   fi
 
